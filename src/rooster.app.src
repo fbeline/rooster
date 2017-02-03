@@ -1,0 +1,9 @@
+%% -*- erlang -*-
+{application, rooster,
+ [{description, "rooster"},
+  {vsn, "0.1"},
+  {modules, []},
+  {registered, []},
+  {mod, {'rooster_app', []}},
+  {env, []},
+  {applications, [kernel, stdlib, crypto]}]}.
