@@ -1,7 +1,7 @@
 -module(rooster_web).
+-include_lib("rooster.hrl").
 
 -export([start/1, stop/0, loop/2]).
-
 
 start(Options) ->
 	{DocRoot, Options1} = get_option(docroot, Options),
@@ -15,8 +15,15 @@ stop() ->
 
 loop(Req, _DocRoot) ->
 	"/" ++ Path = Req:get(path),
+	Request = #request{path=Path,
+			   method=Req:get(method),
+			   headers=Req:get(headers),
+			   body=Req:recv_body(),
+			   qs=Req:parse_qs(),
+			   cookies=Req:parse_cookie()},
 	try
-		Req:respond(rooster:analyze_request(Req))
+		Response = rooster:analyze_request(Request),
+		Req:respond(Response)
 	catch
 		Type:What ->
 			Report = ["web request failed",

@@ -9,7 +9,6 @@ ensure_started(App) ->
 			ok
 	end.
 
-
 %% @spec start() -> ok
 %% @doc Start the greeting server.
 start() ->

@@ -1,4 +1,5 @@
 -module(rooster_srv).
+-include_lib("rooster.hrl").
 -behaviour(gen_server).
 
 -export([start/1, stop/0, init/1]).
@@ -30,9 +31,7 @@ handle_cast(stop, Env) ->
 %% @doc check requested Path
 %%
 handle_call({analyze_route, Req}, _From, Routes) ->
-	"/" ++ Path = Req:get(path),
-	Method = Req:get(method),
-	{Status, Response} = dispatcher:match_route(Path, Method, Req, Routes),
+	{Status, Response} = dispatcher:match_route(Req, Routes),
 	case Status of
 		404 ->
 			{reply, {404, [{"Content-type", "text/plain"}], "Requested endpoint not found."}, Routes};

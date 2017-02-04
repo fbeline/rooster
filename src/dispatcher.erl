@@ -1,16 +1,21 @@
 -module(dispatcher).
+-include_lib("rooster.hrl").
 
--export([match_route/4, compare_route_tokens/3, parse_route/1]).
+-export([match_route/2, compare_route_tokens/3, parse_route/1]).
+
 
 
 %% @doc get matched route and call respective function
 %%
+match_route(Req, Routes) ->
+	match_route(Req#request.path, Req#request.method, Req, Routes).
+
 match_route(_,_,_Req, []) -> {404, []};
 match_route(RequestedRoute, Method, Req, [{Module, Method, Route, Function}|T]) ->
 	RouteTokens = parse_route(Route),
 	RequestedRouteTokens = parse_route(RequestedRoute),
 	{IsValid, PathParams} = compare_route_tokens(RouteTokens, RequestedRouteTokens, []),
-	if IsValid ->
+	if IsValid =:= true ->
 		   io:format("~n~p: ~p", [Method, RequestedRoute]),
 		   case Method of
 			   'GET' ->
@@ -29,7 +34,7 @@ match_route(Route, M1, Req, [_|T]) -> match_route(Route, M1, Req, T).
 %% @doc Get payload and parse to erlang struct
 %%
 decode_data_from_request(Req) ->
-	RecvBody = Req:recv_body(),
+	RecvBody = Req#request.body,
 	Data = case RecvBody of
 		       undefined -> erlang:list_to_binary("{}");
 		       Bin -> Bin

@@ -16,9 +16,15 @@ compare_route_tokens_path_param_test() ->
 		dispatcher:compare_route_tokens(Route, RequestedRoute, [])).
 
 
-compare_route_tokens_fail_test() ->
+compare_route_tokens_fail1_test() ->
 	RequestedRoute = ["products", "10", "load"],
 	Route = ["products", ":id", "update"],
+	?assertEqual({false, []},
+		dispatcher:compare_route_tokens(Route, RequestedRoute, [])).
+
+compare_route_tokens_fail2_test() ->
+	RequestedRoute = ["productz"],
+	Route = ["products"],
 	?assertEqual({false, []},
 		dispatcher:compare_route_tokens(Route, RequestedRoute, [])).
 
