@@ -27,7 +27,7 @@ code_change(_OldVsn, State, _Extra) ->
 handle_cast(stop, Env) ->
 	{stop, normal, Env}.
 
-%% check requested Path
+%% @doc check requested Path
 %%
 handle_call({analyze_route, Req}, _From, Routes) ->
 	"/" ++ Path = Req:get(path),
@@ -40,14 +40,14 @@ handle_call({analyze_route, Req}, _From, Routes) ->
 			{reply, {Status, [{"Content-type", "application/json"}], rooster_json:encode(Response)}, Routes}
 	end.
 
-%% add module to all routes tuples
+%% @doc add module to all routes tuples
 %%
 load_routes([], Acc) -> Acc;
 load_routes([M|T], Acc) ->
 	NewAcc = Acc ++ apply_module(apply(M, exports, []), M, []),
 	load_routes(T, NewAcc).
 
-%% add module to routes tuples
+%% @doc add module to routes tuples
 %%
 apply_module([], _, Acc) -> Acc;
 apply_module([H|T], Module, Acc) ->

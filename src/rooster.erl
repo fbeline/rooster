@@ -24,22 +24,24 @@ stop() ->
 	application:stop(rooster).
 
 
-%% analyze request
+%% @doc analyze request
 %%
 analyze_request(Req) ->
 	gen_server:call(rooster_srv, {analyze_route, Req}).
 
-%% get request payload
+%% @doc get request payload
 %%
 get_payload(Params) ->
 	get_info(Params, body).
 
-%% get request parh params
+%% @doc get request path params
+%%
 get_path_params(Params) ->
 	get_info(Params, path_params).
 
 
-%%  get information from params
+%% @doc get information from params
+%%
 get_info([{Type, Params}|_T], Type) ->
 	Params;
 get_info([_|T], Type) ->
