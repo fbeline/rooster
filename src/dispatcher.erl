@@ -4,7 +4,6 @@
 -export([match_route/2, compare_route_tokens/3, parse_route/1]).
 
 
-
 %% @doc get matched route and call respective function
 %%
 match_route(Req, Routes) ->
@@ -52,6 +51,8 @@ parse_route(Route) ->
 %% @doc Compare routes and extract path parameters
 %%
 compare_route_tokens([], [], Acc) -> {true, {path_params, Acc}};
+compare_route_tokens([], [_H|_T], _) -> {false, {}};
+compare_route_tokens([_H|_T], [], _) -> {false, {}};
 compare_route_tokens([H1|T1],[H2|T2], Acc) -> 
     IsPathParam = string:str(H1, ":") =:= 1,
     SameToken = H1 =:= H2,
@@ -60,5 +61,5 @@ compare_route_tokens([H1|T1],[H2|T2], Acc) ->
        SameToken ->
            compare_route_tokens(T1, T2, Acc);
        true ->
-           {false, []}
+           {false, {}}
     end.
