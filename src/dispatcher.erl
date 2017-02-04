@@ -51,10 +51,9 @@ compare_route_tokens([H1|T1],[H2|T2], Acc) ->
 	IsPathParam = string:str(H1, ":") =:= 1,
 	SameToken = H1 =:= H2,
 	if IsPathParam ->
-		compare_route_tokens(T1, T2, Acc ++ [{H1, H2}]);
+		   compare_route_tokens(T1, T2, Acc ++ [{H1, H2}]);
 	   SameToken ->
 		   compare_route_tokens(T1, T2, Acc);
 	   true ->
 		   {false, []}
 	end.
-

@@ -2,26 +2,26 @@
 -export([start/0, stop/0, analyze_request/1, get_payload/1, get_path_params/1]).
 
 ensure_started(App) ->
-    case application:start(App) of
-        ok ->
-            ok;
-        {error, {already_started, App}} ->
-            ok
-    end.
+	case application:start(App) of
+		ok ->
+			ok;
+		{error, {already_started, App}} ->
+			ok
+	end.
 
 
 %% @spec start() -> ok
 %% @doc Start the greeting server.
 start() ->
-    rooster_deps:ensure(),
-    ensure_started(crypto),
-    application:start(rooster).
+	rooster_deps:ensure(),
+	ensure_started(crypto),
+	application:start(rooster).
 
 
 %% @spec stop() -> ok
 %% @doc Stop the greeting server.
 stop() ->
-    application:stop(rooster).
+	application:stop(rooster).
 
 
 %% analyze request

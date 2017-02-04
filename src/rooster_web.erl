@@ -19,15 +19,14 @@ loop(Req, _DocRoot) ->
 		Req:respond(rooster:analyze_request(Req))
 	catch
 		Type:What ->
-		Report = ["web request failed",
-			  {path, Path},
-			  {type, Type}, {what, What},
-			  {trace, erlang:get_stacktrace()}],
-		error_logger:error_report(Report),
-		Req:respond({500, [{"Content-Type", "text/plain"}],
-			     "request failed, sorry\n"})
+			Report = ["web request failed",
+				  {path, Path},
+				  {type, Type}, {what, What},
+				  {trace, erlang:get_stacktrace()}],
+			error_logger:error_report(Report),
+			Req:respond({500, [{"Content-Type", "text/plain"}],
+				     "request failed, sorry\n"})
 	end.
 
 get_option(Option, Options) ->
 	{proplists:get_value(Option, Options), proplists:delete(Option, Options)}.
-
