@@ -3,10 +3,10 @@
 
 
 get_products(_Req, _Params) ->
-	{200, {[{<<"name">>, <<"pool">>}, {<<"price">>,<<"150">>}]}}.	
+    {200, {[{<<"name">>, <<"pool">>}, {<<"price">>,<<"150">>}]}}.	
 
 save_product(_Req, Params) ->
-	{201, rooster:get_payload(Params)}.
+    {201, rooster:get_payload(Params)}.
 
 exports() ->
-	[{'GET', "products", get_products}, {'POST', "products", save_product}].
+    [{'GET', "products", get_products}, {'POST', "products", save_product}].

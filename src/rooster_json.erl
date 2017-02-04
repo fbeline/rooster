@@ -5,9 +5,9 @@
 %% @doc erlang to json
 %%
 encode(Term) ->
-	jiffy:encode(Term).
+    jiffy:encode(Term).
 
 %% @doc json to erlang
 %%
 decode(Term) ->
-	jiffy:decode(Term).
+    jiffy:decode(Term).
