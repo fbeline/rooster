@@ -31,28 +31,13 @@ handle_cast(stop, Env) ->
 %%
 handle_call({analyze_route, Req}, _From, Routes) ->
 	"/" ++ Path = Req:get(path),
-	try
-		Method = Req:get(method),
-		{Status, Response} = dispatcher:match_route(Path, Method, Req, Routes),
-		io:format("~n~p~n", [Response]),
-		case Status of
-			404 ->
-				Req:respond({404, [{"Content-type", "text/plain"}], "Requested endpoint not found."});
-			_ ->
-				Req:respond({Status, [{"Content-type", "application/json"}], rooster_json:encode(Response)})
-		end
-	catch
-		Type:What ->
-			Report = ["web request failed",
-				  {path, Path},
-				  {type, Type}, {what, What},
-				  {trace, erlang:get_stacktrace()}],
-			error_logger:error_report(Report),
-			Req:respond({500, [{"Content-Type", "text/plain"}],
-				     "request failed, sorry\n"})
-	after
-		io:format("~n=====================~n~p~n", [Routes]),
-		{replay, {}, Routes}
+	Method = Req:get(method),
+	{Status, Response} = dispatcher:match_route(Path, Method, Req, Routes),
+	case Status of
+		404 ->
+			{reply, {404, [{"Content-type", "text/plain"}], "Requested endpoint not found."}, Routes};
+		_ ->
+			{reply, {Status, [{"Content-type", "application/json"}], rooster_json:encode(Response)}, Routes}
 	end.
 
 %% add module to all routes tuples
