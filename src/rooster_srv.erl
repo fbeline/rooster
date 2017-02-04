@@ -39,7 +39,7 @@ handle_call({analyze_route, Req}, _From, Routes) ->
 			404 ->
 				Req:respond({404, [{"Content-type", "text/plain"}], "Requested endpoint not found."});
 			_ ->
-				Req:respond({Status, [{"Content-type", "application/json"}], mochijson2:encode(Response)})
+				Req:respond({Status, [{"Content-type", "application/json"}], rooster_json:encode(Response)})
 		end
 	catch
 		Type:What ->
@@ -54,6 +54,7 @@ handle_call({analyze_route, Req}, _From, Routes) ->
 		io:format("~n=====================~n~p~n", [Routes]),
 		{replay, {}, Routes}
 	end.
+
 %% add module to all routes tuples
 %%
 load_routes([], Acc) -> Acc;

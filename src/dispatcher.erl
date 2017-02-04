@@ -34,7 +34,7 @@ decode_data_from_request(Req) ->
 		       undefined -> erlang:list_to_binary("{}");
 		       Bin -> Bin
 	       end,
-	{struct, Struct} = mochijson2:decode(Data),
+	Struct = rooster_json:decode(Data),
 	{body, Struct}.
 
 %% Parse a route in tokens
