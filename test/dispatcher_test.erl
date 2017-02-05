@@ -5,14 +5,14 @@
 compare_route_tokens_simple_test() ->
 	RequestedRoute = ["products", "save"],
 	Route = ["products", "save"],
-	?assertEqual({true, {path_params, []}},
+	?assertEqual({true, []},
 		dispatcher:compare_route_tokens(Route, RequestedRoute, [])).
 
 
 compare_route_tokens_path_param_test() ->
 	RequestedRoute = ["products", "10", "load"],
 	Route = ["products", ":id", "load"],
-	?assertEqual({true, {path_params, [{":id", "10"}]}},
+	?assertEqual({true, [{":id", "10"}]},
 		dispatcher:compare_route_tokens(Route, RequestedRoute, [])).
 
 

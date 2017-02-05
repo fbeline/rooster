@@ -20,7 +20,8 @@ loop(Req, _DocRoot) ->
                        headers=Req:get(headers),
                        body=Req:recv_body(),
                        qs=Req:parse_qs(),
-                       cookies=Req:parse_cookie()},
+                       cookies=Req:parse_cookie(),
+                       pathParams=[]},
     try
         Response = rooster:analyze_request(Request),
         Req:respond(Response)
