@@ -3,15 +3,15 @@
 -behaviour(supervisor).
 
 %% External exports
--export([start_link/0, upgrade/0]).
+-export([start_link/1, upgrade/0]).
 
 %% supervisor callbacks
 -export([init/1]).
 
 %% @spec start_link() -> ServerRet
 %% @doc API for starting the supervisor.
-start_link() ->
-    supervisor:start_link({local, ?MODULE}, ?MODULE, []).
+start_link(State) ->
+    supervisor:start_link({local, ?MODULE}, ?MODULE, State).
 
 %% @spec upgrade() -> ok
 %% @doc Add processes if necessary.
@@ -34,9 +34,9 @@ upgrade() ->
 
 %% @spec init([]) -> SupervisorTree
 %% @doc supervisor callback.
-init([]) ->
-    Web = web_specs(rooster_web, 8080),
-    Rooster_specs = register_rooster([route_example]),
+init({Port, Routes}) ->
+    Web = web_specs(rooster_web, Port),
+    Rooster_specs = register_rooster(Routes),
     Strategy = {one_for_one, 10, 10},
     {ok, {Strategy, [Web, Rooster_specs]}}.
 
