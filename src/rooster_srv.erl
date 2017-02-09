@@ -31,7 +31,7 @@ handle_cast(stop, Env) ->
 %% @doc check requested Path
 %%
 handle_call({analyze_route, Req}, _From, Routes) ->
-    {Status, Response} = dispatcher:match_route(Req, Routes),
+    {Status, Response} = rooster_dispatcher:match_route(Req, Routes),
     case Status of
         404 ->
             {reply, {404, [{"Content-type", "text/plain"}], "Requested endpoint not found."}, Routes};

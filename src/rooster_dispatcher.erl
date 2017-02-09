@@ -1,4 +1,4 @@
--module(dispatcher).
+-module(rooster_dispatcher).
 -include_lib("rooster.hrl").
 
 -export([match_route/2, compare_route_tokens/3, parse_route/1, call_route_function/3]).
