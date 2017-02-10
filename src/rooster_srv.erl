@@ -20,10 +20,10 @@ terminate(_Reason, _Env) ->
     io:format("Terminating...~n").
 
 handle_info({'EXIT', _Pid, _Reason}, State) ->
-    {noreplay, State}.
+    {noreply, State}.
 
 code_change(_OldVsn, State, _Extra) ->
-    {noreplay, State}.
+    {ok, State}.
 
 handle_cast(stop, Env) ->
     {stop, normal, Env}.

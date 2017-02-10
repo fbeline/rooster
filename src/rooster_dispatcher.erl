@@ -6,8 +6,11 @@
 
 %% @doc get matched route
 %%
+-spec match_route(request(), list(route())) -> {integer(), any()}.
+
 match_route(Req, Routes) ->
     match_route(Req#request.path, Req#request.method, Req, Routes).
+
 
 match_route(_,_,_Req, []) -> {404, []};
 match_route(RequestedRoute, Method, Req, [{Module, Method, Route, Function}|T]) ->
@@ -25,6 +28,8 @@ match_route(Route, M1, Req, [_|T]) -> match_route(Route, M1, Req, T).
 
 %% @doc Call route function
 %%
+-spec call_route_function(request(), {module(), atom()}, list()) -> {integer(), any()}.
+
 call_route_function(Req, {Module, Function}, PathParams) ->
     NewRequest = #request{path=Req#request.path,
                        method=Req#request.method,
@@ -35,13 +40,10 @@ call_route_function(Req, {Module, Function}, PathParams) ->
                        pathParams=PathParams},
     apply(Module, Function, [NewRequest]).
 
-% call_route_function(Req, {Module, Method, _, Function}, PathParams) when Method =/= 'GET' ->
-%     Req#request.path_params = PathParams,
-%     Req#request.body = decode_data_from_request(Req),
-%     apply(Module, Function, Req).
-
 %% @doc Get payload and parse to erlang struct
 %%
+-spec decode_data_from_request(request()) -> any().
+
 decode_data_from_request(Req) ->
     RecvBody = Req#request.body,
     Data = case RecvBody of
@@ -52,6 +54,8 @@ decode_data_from_request(Req) ->
 
 %% @doc Parse a route in tokens
 %%
+-spec parse_route(string()) -> [nonempty_string()].
+
 parse_route(Route) ->
     [RouteWithoutQueryParams| _] = string:tokens(Route, "?"),
     RouteTokens = string:tokens(RouteWithoutQueryParams, "/"),
@@ -59,6 +63,8 @@ parse_route(Route) ->
 
 %% @doc Compare routes and extract path parameters
 %%
+-spec compare_route_tokens(maybe_improper_list(), maybe_improper_list(), _) -> {false, {}} | {true, _}.
+
 compare_route_tokens([], [], Acc) -> {true, Acc};
 compare_route_tokens([], [_H|_T], _) -> {false, {}};
 compare_route_tokens([_H|_T], [], _) -> {false, {}};

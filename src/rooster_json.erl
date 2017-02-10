@@ -4,10 +4,14 @@
 
 %% @doc erlang to json
 %%
+-spec encode(any()) -> string().
+
 encode(Term) ->
     jiffy:encode(Term).
 
 %% @doc json to erlang
 %%
+-spec decode(string()) -> any().
+
 decode(Term) ->
     jiffy:decode(Term).
