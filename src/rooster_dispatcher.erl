@@ -6,7 +6,7 @@
 
 %% @doc get matched route
 %%
--spec match_route(request(), list(route())) -> {integer(), any()}.
+-spec match_route(request(), list(route())) -> response().
 
 match_route(Req, Routes) ->
     match_route(Req#request.path, Req#request.method, Req, Routes).
@@ -28,7 +28,7 @@ match_route(Route, M1, Req, [_|T]) -> match_route(Route, M1, Req, T).
 
 %% @doc Call route function
 %%
--spec call_route_function(request(), {module(), atom()}, list()) -> {integer(), any()}.
+-spec call_route_function(request(), {module(), atom()}, list()) -> response().
 
 call_route_function(Req, {Module, Function}, PathParams) ->
     NewRequest = #request{path=Req#request.path,
@@ -63,7 +63,7 @@ parse_route(Route) ->
 
 %% @doc Compare routes and extract path parameters
 %%
--spec compare_route_tokens(maybe_improper_list(), maybe_improper_list(), _) -> {false, {}} | {true, _}.
+-spec compare_route_tokens(maybe_improper_list(), maybe_improper_list(), _) -> {false, {}}|{true, _}.
 
 compare_route_tokens([], [], Acc) -> {true, Acc};
 compare_route_tokens([], [_H|_T], _) -> {false, {}};

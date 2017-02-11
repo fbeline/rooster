@@ -41,6 +41,8 @@ handle_call({analyze_route, Req}, _From, Routes) ->
 
 %% @doc add module to all routes tuples
 %%
+-spec load_routes(list(route()), list()) -> list(route()).
+
 load_routes([], Acc) -> Acc;
 load_routes([M|T], Acc) ->
     NewAcc = Acc ++ apply_module(apply(M, exports, []), M, []),
@@ -48,6 +50,8 @@ load_routes([M|T], Acc) ->
 
 %% @doc add module to routes tuples
 %%
+-spec apply_module(list(route()), module(), list()) -> list(route()).
+
 apply_module([], _, Acc) -> Acc;
 apply_module([H|T], Module, Acc) ->
     NewEntry = erlang:insert_element(1, H, Module),

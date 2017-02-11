@@ -26,12 +26,8 @@ loop(Req, _DocRoot) ->
         Response = rooster:analyze_request(Request),
         Req:respond(Response)
     catch
-        Type:What ->
-            Report = ["web request failed",
-                      {path, Path},
-                      {type, Type}, {what, What},
-                      {trace, erlang:get_stacktrace()}],
-            error_logger:error_report(Report),
+        _Exception:_Reason ->
+            rooster_logger:err([Path, " -- web request failed --"]),
             Req:respond({500, [{"Content-Type", "text/plain"}],
                          "request failed, sorry\n"})
     end.
