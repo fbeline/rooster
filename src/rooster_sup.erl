@@ -47,7 +47,7 @@ web_specs(Mod, Port) ->
     {Mod, {Mod, start, [WebConfig]}, permanent, 5000, worker, dynamic}.
 
 register_rooster(Routes) ->
-    {rooster_srv, {rooster_srv, start, [Routes]},
+    {rooster_srv, {rooster_srv, start, [[{routes, Routes}, {middlewares, [middleware_example]}]]},
      permanent,
      5000,
      worker,

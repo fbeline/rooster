@@ -1,44 +1,47 @@
 -module(rooster_dispatcher).
 -include_lib("rooster.hrl").
 
--export([match_route/2, compare_route_tokens/3, parse_route/1, call_route_function/3]).
+-export([match_route/3, compare_route_tokens/3, parse_route/1, call_route_function/4]).
 
 
 %% @doc get matched route
 %%
--spec match_route(request(), list(route())) -> response().
+-spec match_route(request(), list(route()), list(middleware())) -> response().
 
-match_route(Req, Routes) ->
-    match_route(Req#request.path, Req#request.method, Req, Routes).
+match_route(Req, Routes, Middlewares) ->
+    match_route(Req#request.path, Req#request.method, Req, Routes, Middlewares).
 
 
-match_route(_,_,_Req, []) -> {404, []};
-match_route(RequestedRoute, Method, Req, [{Module, Method, Route, Function}|T]) ->
+match_route(_,_,_Req, [],_) -> {404, []};
+match_route(RequestedRoute, Method, Req, [{Module, Method, Route, Function}|T], Middlewares) ->
     RouteTokens = parse_route(Route),
     RequestedRouteTokens = parse_route(RequestedRoute),
     {IsValid, PathParams} = compare_route_tokens(RouteTokens, RequestedRouteTokens, []),
     if IsValid =:= true ->
            rooster_logger:info([lists:concat([Method,":",RequestedRoute])]), 
-           call_route_function(Req, {Module, Function}, PathParams);    
+           call_route_function(Req, {Module, Function}, PathParams, Middlewares);    
        true ->
-           match_route(Route, Method, Req, T)
+           match_route(Route, Method, Req, T, Middlewares)
     end;
 
-match_route(Route, M1, Req, [_|T]) -> match_route(Route, M1, Req, T).
+match_route(Route, M1, Req, [_|T], Middlewares) -> match_route(Route, M1, Req, T, Middlewares).
 
 %% @doc Call route function
 %%
--spec call_route_function(request(), {module(), atom()}, list()) -> response().
+-spec call_route_function(request(), {module(), atom()}, list(), list(middleware())) -> response().
 
-call_route_function(Req, {Module, Function}, PathParams) ->
+call_route_function(Req, {Module, Function}, PathParams, Middlewares) ->
     NewRequest = #request{path=Req#request.path,
-                       method=Req#request.method,
-                       headers=Req#request.headers,
-                       body= decode_data_from_request(Req),
-                       qs=Req#request.qs,
-                       cookies=Req#request.cookies,
-                       pathParams=PathParams},
-    apply(Module, Function, [NewRequest]).
+                          method=Req#request.method,
+                          headers=Req#request.headers,
+                          body= decode_data_from_request(Req),
+                          qs=Req#request.qs,
+                          cookies=Req#request.cookies,
+                          pathParams=PathParams},
+
+    RespBefore = rooster_middleware:match('BEFORE', NewRequest, Middlewares, undefined),
+    Resp = apply(Module, Function, [NewRequest, RespBefore]),
+    rooster_middleware:match('AFTER', NewRequest, Middlewares, Resp).
 
 %% @doc Get payload and parse to erlang struct
 %%

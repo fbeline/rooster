@@ -8,4 +8,5 @@
 
 -type request() :: #request{}.
 -type route() :: {module(), atom(), string(), any()}.
+-type middleware() :: {module(), atom(), string(), any()}.
 -type response() :: {integer(), any()}.
