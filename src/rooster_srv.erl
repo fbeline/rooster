@@ -6,8 +6,8 @@
 -export([handle_call/3, handle_cast/2, terminate/2, handle_info/2, code_change/3]).
 
 start(State) ->
-    Routes = load_routes(proplists:get_value(routes, State), []),
-    Middlewares = load_routes(proplists:get_value(middlewares, State), []),
+    Routes = add_module(proplists:get_value(routes, State), []),
+    Middlewares = add_module(proplists:get_value(middlewares, State), []),
     gen_server:start_link({local, ?MODULE}, ?MODULE, [Routes, Middlewares], []).
 
 stop() ->
@@ -42,12 +42,12 @@ handle_call({analyze_route, Req}, _From, [Routes, Middlewares]) ->
 
 %% @doc add module to all routes tuples
 %%
--spec load_routes(list(route()), list()) -> list(route()).
+-spec add_module(list(route()), list()) -> list(route()).
 
-load_routes([], Acc) -> Acc;
-load_routes([M|T], Acc) ->
+add_module([], Acc) -> Acc;
+add_module([M|T], Acc) ->
     NewAcc = Acc ++ apply_module(apply(M, exports, []), M, []),
-    load_routes(T, NewAcc).
+    add_module(T, NewAcc).
 
 %% @doc add module to routes tuples
 %%
