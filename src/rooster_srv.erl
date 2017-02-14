@@ -8,17 +8,16 @@
 start(State) ->
     Routes = add_module(proplists:get_value(routes, State), []),
     Middlewares = add_module(proplists:get_value(middlewares, State), []),
-    gen_server:start_link({local, ?MODULE}, ?MODULE, [Routes, Middlewares], []).
+    gen_server:start_link(?MODULE, [Routes, Middlewares], []).
 
 stop() ->
     gen_server:cast(?MODULE, stop).
 
 init(Env) ->
-    io:format("Starting...~n"),
     {ok, Env}.
 
 terminate(_Reason, _Env) ->
-    io:format("Terminating...~n").
+    ok.
 
 handle_info({'EXIT', _Pid, _Reason}, State) ->
     {noreply, State}.
@@ -35,9 +34,9 @@ handle_call({analyze_route, Req}, _From, [Routes, Middlewares]) ->
     {Status, Response} = rooster_dispatcher:match_route(Req, Routes, Middlewares),
     case Status of
         404 ->
-            {reply, {404, [{"Content-type", "text/plain"}], "Requested endpoint not found."}, [Routes, Middlewares]};
+            {stop, normal, {404, [{"Content-type", "text/plain"}], "Requested endpoint not found."}, [Routes, Middlewares]};
         _ ->
-            {reply, {Status, [{"Content-type", "application/json"}], rooster_json:encode(Response)}, [Routes, Middlewares]}
+            {stop, normal, {Status, [{"Content-type", "application/json"}], rooster_json:encode(Response)}, [Routes, Middlewares]}
     end.
 
 %% @doc add module to all routes tuples

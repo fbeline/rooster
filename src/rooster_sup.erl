@@ -36,9 +36,9 @@ upgrade() ->
 %% @doc supervisor callback.
 init({Port, Routes}) ->
     Web = web_specs(rooster_web, Port),
-    Rooster_specs = register_rooster(Routes),
+    _Rooster_specs = register_rooster(Routes),
     Strategy = {one_for_one, 10, 10},
-    {ok, {Strategy, [Web, Rooster_specs]}}.
+    {ok, {Strategy, [Web]}}.
 
 web_specs(Mod, Port) ->
     WebConfig = [{ip, {0,0,0,0}},

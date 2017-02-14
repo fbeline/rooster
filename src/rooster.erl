@@ -34,7 +34,8 @@ stop() ->
 -spec analyze_request(request()) -> response().
 
 analyze_request(Req) ->
-    gen_server:call(rooster_srv, {analyze_route, Req}).
+    {ok, Pid} = rooster_srv:start([{routes, [route_example]}, {middlewares, [middleware_example]}]),
+    gen_server:call(Pid, {analyze_route, Req}).
 
 %% @doc start rooster server
 %%
