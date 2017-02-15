@@ -6,9 +6,7 @@
 -export([handle_call/3, handle_cast/2, terminate/2, handle_info/2, code_change/3]).
 
 start(State) ->
-    Routes = add_module(proplists:get_value(routes, State), []),
-    Middlewares = add_module(proplists:get_value(middlewares, State), []),
-    gen_server:start_link(?MODULE, [Routes, Middlewares], []).
+    gen_server:start_link(?MODULE, State, []).
 
 stop() ->
     gen_server:cast(?MODULE, stop).
@@ -30,7 +28,7 @@ handle_cast(stop, Env) ->
 
 %% @doc check requested Path
 %%
-handle_call({analyze_route, Req}, _From, [Routes, Middlewares]) ->
+handle_call({analyze_route, Req}, _From, {Routes, Middlewares}) ->
     {Status, Response} = rooster_dispatcher:match_route(Req, Routes, Middlewares),
     case Status of
         404 ->
@@ -39,20 +37,3 @@ handle_call({analyze_route, Req}, _From, [Routes, Middlewares]) ->
             {stop, normal, {Status, [{"Content-type", "application/json"}], rooster_json:encode(Response)}, [Routes, Middlewares]}
     end.
 
-%% @doc add module to all routes tuples
-%%
--spec add_module(list(route()), list()) -> list(route()).
-
-add_module([], Acc) -> Acc;
-add_module([M|T], Acc) ->
-    NewAcc = Acc ++ apply_module(apply(M, exports, []), M, []),
-    add_module(T, NewAcc).
-
-%% @doc add module to routes tuples
-%%
--spec apply_module(list(route()), module(), list()) -> list(route()).
-
-apply_module([], _, Acc) -> Acc;
-apply_module([H|T], Module, Acc) ->
-    NewEntry = erlang:insert_element(1, H, Module),
-    apply_module(T, Module, [NewEntry|Acc]).

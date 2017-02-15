@@ -1,7 +1,7 @@
 -module(rooster).
 -include_lib("rooster.hrl").
 
--export([start/0, stop/0, analyze_request/1, start_server/2]).
+-export([start/0, stop/0, analyze_request/3, start_server/2]).
 
 ensure_started(App) ->
     case application:start(App) of
@@ -31,16 +31,16 @@ stop() ->
 
 %% @doc analyze request
 %%
--spec analyze_request(request()) -> response().
+-spec analyze_request(request(), [route()], [middleware()]) -> response().
 
-analyze_request(Req) ->
-    {ok, Pid} = rooster_srv:start([{routes, [route_example]}, {middlewares, [middleware_example]}]),
+analyze_request(Req, Routes, Middlewares) ->
+    {ok, Pid} = rooster_srv:start({Routes, Middlewares}),
     gen_server:call(Pid, {analyze_route, Req}).
 
 %% @doc start rooster server
 %%
 -spec start_server(integer(), list(route())) -> 'ignore' | {'error',_} | {'ok',pid()}.
 
-start_server(Port, Routes) ->
+start_server(Port, State) ->
     rooster_deps:ensure(),
-    rooster_sup:start_link({Port, Routes}).
+    rooster_sup:start_link({Port, State}).

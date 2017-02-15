@@ -14,6 +14,7 @@ stop() ->
     mochiweb_http:stop(?MODULE).
 
 loop(Req, _DocRoot) ->
+    {Routes, Middlewares} = gen_server:call(rooster_config_srv, get_state),
     "/" ++ Path = Req:get(path),
     Request = #request{path=Path,
                        method=Req:get(method),
@@ -23,7 +24,7 @@ loop(Req, _DocRoot) ->
                        cookies=Req:parse_cookie(),
                        pathParams=[]},
     try
-        Response = rooster:analyze_request(Request),
+        Response = rooster:analyze_request(Request, Routes, Middlewares),
         Req:respond(Response)
     catch
         _Exception:_Reason ->
