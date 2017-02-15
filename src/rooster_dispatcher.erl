@@ -18,7 +18,7 @@ match_route(RequestedRoute, Method, Req, [{Module, Method, Route, Function}|T], 
     RequestedRouteTokens = parse_route(RequestedRoute),
     {IsValid, PathParams} = compare_route_tokens(RouteTokens, RequestedRouteTokens, []),
     if IsValid =:= true ->
-           rooster_logger:info([lists:concat([Method,":",RequestedRoute])]), 
+           error_logger:info_msg("Route matched: " ++ lists:concat([Method,":",RequestedRoute]), []), 
            call_route_function(Req, {Module, Function}, PathParams, Middlewares);    
        true ->
            match_route(Route, Method, Req, T, Middlewares)

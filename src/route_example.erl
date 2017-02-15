@@ -4,7 +4,7 @@
 
 
 get_products(_Req, Resp) ->
-    rooster_logger:info([Resp]),
+    error_logger:info_msg("~p", [Resp]), 
     {200, {[{<<"name">>, <<"pool">>}, {<<"price">>,<<"150">>}]}}.	
 
 save_product(Req, _Resp) ->
