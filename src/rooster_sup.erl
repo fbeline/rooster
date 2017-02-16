@@ -17,7 +17,6 @@ start_link(State) ->
 %% @doc Add processes if necessary.
 upgrade() ->
     {ok, {_, Specs}} = init([]),
-
     Old = sets:from_list(
             [Name || {Name, _, _, _} <- supervisor:which_children(?MODULE)]),
     New = sets:from_list([Name || {Name, _, _, _, _, _} <- Specs]),
@@ -40,12 +39,16 @@ init({Port, Routes, Middlewares}) ->
     Strategy = {one_for_one, 10, 10},
     {ok, {Strategy, [Web, RoosterConfig]}}.
 
+%% @doc generate mochiweb specs to be used by supervisor
+%%
 web_specs(Mod, Port) ->
     WebConfig = [{ip, {0,0,0,0}},
                  {port, Port},
                  {docroot, rooster_deps:local_path(["priv", "www"])}],
     {Mod, {Mod, start, [WebConfig]}, permanent, 5000, worker, dynamic}.
 
+%% @doc generate rooster_config specs to be used by supervisor
+%%
 register_rooster(Routes, Middlewares) ->
     {rooster_config_srv, {rooster_config_srv, start, [{Routes, Middlewares}]},
      permanent,

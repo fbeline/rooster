@@ -26,7 +26,7 @@ code_change(_OldVsn, State, _Extra) ->
 handle_cast(stop, Env) ->
     {stop, normal, Env}.
 
-%% @doc check requested Path
+%% @doc handle http request, executing relevant routes and middlewares that fit on it
 %%
 handle_call({analyze_route, Req}, _From, {Routes, Middlewares}) ->
     {Status, Response} = rooster_dispatcher:match_route(Req, Routes, Middlewares),
