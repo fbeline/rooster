@@ -4,6 +4,7 @@
                   body,
                   qs,
                   cookies,
+                  authorization :: string(),
                   pathParams :: list()}).
 
 -type request() :: #request{}.

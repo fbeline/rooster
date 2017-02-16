@@ -37,7 +37,8 @@ call_route_function(Req, {Module, Function}, PathParams, Middlewares) ->
                           body= decode_data_from_request(Req),
                           qs=Req#request.qs,
                           cookies=Req#request.cookies,
-                          pathParams=PathParams},
+                          pathParams=PathParams,
+                          authorization=Req#request.authorization},
 
     RespBefore = rooster_middleware:match('BEFORE', NewRequest, Middlewares, undefined),
     Resp = apply(Module, Function, [NewRequest, RespBefore]),

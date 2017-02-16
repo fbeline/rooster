@@ -22,7 +22,8 @@ loop(Req, _DocRoot) ->
                        body=Req:recv_body(),
                        qs=Req:parse_qs(),
                        cookies=Req:parse_cookie(),
-                       pathParams=[]},
+                       pathParams=[],
+                       authorization=Req:get_header_value('Authorization')},
     try
         Response = rooster:analyze_request(Request, Routes, Middlewares),
         Req:respond(Response)
