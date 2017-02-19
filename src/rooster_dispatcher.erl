@@ -41,8 +41,15 @@ call_route_function(Req, {Module, Function}, PathParams, Middlewares) ->
                           authorization=Req#request.authorization},
 
     RespBefore = rooster_middleware:match('BEFORE', NewRequest, Middlewares, undefined),
-    Resp = apply(Module, Function, [NewRequest, RespBefore]),
-    rooster_middleware:match('AFTER', NewRequest, Middlewares, Resp).
+    case RespBefore of
+        {next, Resp} ->
+            RouteResp = apply(Module, Function, [NewRequest, Resp]),
+            {_, AfterResponse} = rooster_middleware:match('AFTER', NewRequest, Middlewares, RouteResp),
+            AfterResponse;
+        {_, Resp} ->
+            Resp
+    end.
+
 
 %% @doc Get payload and parse to erlang struct
 %%

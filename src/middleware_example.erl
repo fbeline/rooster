@@ -1,19 +1,18 @@
 -module(middleware_example).
--export([exports/0,foo/2, basic_auth/2]).
+-export([exports/0, basic_auth/2]).
 
 -include_lib("rooster.hrl").
 
-foo(_Req, _Resp) ->
-    "something...".
-
-basic_auth(Req, _Resp) ->
+basic_auth(Req, Resp) ->
     Auth = Req#request.authorization,
-    case Auth of
-        "Basic" ++ Params ->
-            Params;
+    Authorizated = rooster_basic_auth:is_authorized(Auth, {"admin", "admin"}),
+    case Authorizated of
+        true ->
+            {next, Resp};
         _ ->
-            {permission_denied}
-    end.
+            {break, {403, {[{<<"reason">>, <<"Acess Forbidden">>}]}}}
+    end. 
+
 
 exports() ->
     [{'BEFORE', ".*", basic_auth}].
