@@ -23,5 +23,6 @@ parse_credentials_sanity_credentials_test() ->
 
 parse_credentials_malformed_credentials_test() ->
     Auth = "Basic YWRtRtaW4=",
-    Resp = rooster_basic_auth:parse_credentials(Auth),
-    ?assertEqual(malformed_credentials, Resp).
+    Credentials = {"admin", "admin"},
+    Resp = rooster_basic_auth:is_authorized(Auth, Credentials),
+    ?assertEqual(false, Resp).
