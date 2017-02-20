@@ -19,7 +19,7 @@ compare_route_tokens_path_param_test() ->
 
 
 compare_route_tokens_fail1_test() ->
-	RequestedRoute = ["products", "10", "load"],
+	RequestedRoute = ["products", "10"],
 	Route = ["products", ":id", "update"],
 	?assertEqual({false, {}},
 		rooster_dispatcher:compare_route_tokens(Route, RequestedRoute, [])).
