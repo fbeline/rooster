@@ -21,7 +21,7 @@ match_route(RequestedRoute, Method, Req, [{Module, Method, Route, Function}|T], 
            error_logger:info_msg("Route matched: " ++ lists:concat([Method,":",RequestedRoute]), []), 
            call_route_function(Req, {Module, Function}, PathParams, Middlewares);    
        true ->
-           match_route(Route, Method, Req, T, Middlewares)
+           match_route(RequestedRoute, Method, Req, T, Middlewares)
     end;
 
 match_route(Route, M1, Req, [_|T], Middlewares) -> match_route(Route, M1, Req, T, Middlewares).
