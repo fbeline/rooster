@@ -7,7 +7,8 @@
 - **0% down time**: You can change your code in real time! The changes will be available in the the next request (without stopping the application).
 
 #Installation
-1) Download and install [rebar3](https://www.rebar3.org/) 
+1) Download and install [rebar3](https://www.rebar3.org/)
+
 2) Edit the file **rebar.config** and add the following lines inside deps:
 
 	{deps, [
@@ -19,12 +20,34 @@
 
 That is it, we are ready to move foward.
 
-#examples
+#Middleware example
 
-under construction..
+Follows an example of a middleware used to authenticate the API through basic authentication.
+
+	-module(middleware_example).
+	-export([exports/0, basic_auth/2]).
+
+	-include_lib("rooster.hrl").
+
+	basic_auth(Req, Resp) ->
+	    Auth = Req#request.authorization,
+	    Authorizated = rooster_basic_auth:is_authorized(Auth, {"admin", "admin"}),
+	    case Authorizated of
+		true ->
+		    {next, Resp};
+		_ ->
+		    {break, {403, {[{<<"reason">>, <<"Acess Forbidden">>}]}}}
+	    end. 
 
 
+	exports() ->
+	    [{'BEFORE', ".*", basic_auth}].
 
+The method **exports** will return a list of tuples, the first argument is the moment when the middleware will be executed(before or after the request), the second is the regex that will be evaluated based on the requested route, and the final one is the method that will be executed.
+
+	{'BEFORE'|'AFTER', RegEx, Method}
+	
+The method return should be `{next|any(), any()}`. When something different from `next` is passed the rooster will not execute the following middleware/route and will return the Resp directly to the client. Otherwise the next middleware/route will be executed and the `Resp` parameter of it will be the Result of our current middleware, creating a chain of executions.
 #Dependencies
 - mochiweb: HTTP server
 - jiffy: JSON parser
