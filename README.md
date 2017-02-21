@@ -3,7 +3,7 @@
 #Features
 - **Routes** that supports `GET` `POST` `PUT` and `DELETE` methods.
 - **Middlewares**: Functions that have access to the request and the response, intercepting routes before and/or after execution, also can judge and decide if the next middleware/route in the application cycle will be executed.
-- **Basic Authentication**: Rooster provide a basic authentication module that can be easily intregated with the middleware system.
+- **Basic Authentication**: Rooster provide a basic authentication module that can be easily integrated with middlewares.
 - **0% down time**: You can change your code in real time! The changes will be available in the the next request (without stopping the application).
 
 #Installation
@@ -43,7 +43,7 @@ Simple route example.
 	    [{'GET', "products", get_products}, {'GET', "products/:id", get_product}, {'POST', "products", save_product}].
 
 
-The **exports** method is required, it will provide the list of available endpoints that this module contains. Each tuple should have the http method, the route itself and the erlang function that will be executed. 
+The **exports** method is required, it will provide the list of available endpoints that this module contains. Each tuple should have the http method, the route itself and the function that will be executed. 
 
 Is important to note that the functions **must** have two parameters, **Req** and **Resp**, the `Resp` will contains the possible result of previous middlewares and the `Req` all the major information.
 
@@ -81,11 +81,12 @@ Follows an example of a middleware used to authenticate the API through basic au
 	exports() ->
 	    [{'BEFORE', ".*", basic_auth}].
 
-The method **exports** will return a list of tuples, the first argument is the moment when the middleware will be executed(before or after the request), the second is the regex that will be evaluated based on the requested route, and the final one is the method that will be executed.
+The method **exports** will return a list of tuples, the first argument is the moment when the middleware will be executed(before or after the request), the second is the regex that will be evaluated based on the requested route, and the final one is the function that will be executed.
 
 	{'BEFORE'|'AFTER', RegEx, Method}
 	
-The method return should be `{next|any(), any()}`. When something different from `next` is passed the rooster will not execute the following middleware/route and will return the Resp directly to the client. Otherwise the next middleware/route will be executed and the `Resp` parameter of it will be the Result of our current middleware, creating a chain of executions.
+The function return should be `{next|any(), any()}`. When something different from `next` is passed the rooster will not execute the following middleware/route and will return the Resp directly to the client. Otherwise the next middleware/route will be executed and the `Resp` parameter of it will be the Result of the current middleware, creating a chain of executions.
+
 #Dependencies
 - mochiweb: HTTP server
 - jiffy: JSON parser
