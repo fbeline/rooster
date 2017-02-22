@@ -4,6 +4,7 @@
 - **Routes** that supports `GET` `POST` `PUT` and `DELETE` methods.
 - **Middlewares**: Functions that have access to the request and the response, intercepting routes before and/or after execution, also can judge and decide if the next middleware/route in the application cycle will be executed.
 - **Basic Authentication**: Rooster provide a basic authentication module that can be easily integrated with middlewares.
+- **CORS configuration**: You are able to easily configure CORS for your application.
 - **0% down time**: You can change your code in real time! The changes will be available in the the next request (without stopping the application).
 
 #Installation

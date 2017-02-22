@@ -10,7 +10,7 @@ basic_auth(Req, Resp) ->
         true ->
             {next, Resp};
         _ ->
-            {break, {403, {[{<<"reason">>, <<"Acess Forbidden">>}]}}}
+            {break, {403, #{reason => <<"Acess Forbidden">>}}}
     end. 
 
 

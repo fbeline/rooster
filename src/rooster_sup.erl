@@ -33,9 +33,9 @@ upgrade() ->
 
 %% @spec init([]) -> SupervisorTree
 %% @doc supervisor callback.
-init({Port, Routes, Middlewares}) ->
+init({Port, Routes, Middlewares, Cors}) ->
     Web = web_specs(rooster_web, Port),
-    RoosterConfig = register_rooster(Routes, Middlewares),
+    RoosterConfig = register_rooster(Routes, Middlewares, Cors),
     Strategy = {one_for_one, 10, 10},
     {ok, {Strategy, [Web, RoosterConfig]}}.
 
@@ -49,8 +49,8 @@ web_specs(Mod, Port) ->
 
 %% @doc generate rooster_config specs to be used by supervisor
 %%
-register_rooster(Routes, Middlewares) ->
-    {rooster_config_srv, {rooster_config_srv, start, [{Routes, Middlewares}]},
+register_rooster(Routes, Middlewares, Cors) ->
+    {rooster_config_srv, {rooster_config_srv, start, [{Routes, Middlewares, Cors}]},
      permanent,
      5000,
      worker,
