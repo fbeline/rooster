@@ -28,9 +28,8 @@ handle_cast(stop, Env) ->
 
 %% @doc handle http request, executing relevant routes and middlewares that fit on it
 %%
-handle_call({analyze_route, Req}, _From, {Routes, Middlewares}) ->
+handle_call({analyze_route, Req}, _From, {Routes, Middlewares, Cors}) ->
     {Status, Response} = rooster_dispatcher:match_route(Req, Routes, Middlewares),
-    Cors = gen_server:call(rooster_config_srv, get_cors),
     case Status of
         404 ->
             {stop, normal, {404, [{"Content-type", "text/plain"}], "Requested endpoint not found."}, [Routes, Middlewares]};

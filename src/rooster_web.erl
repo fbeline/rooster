@@ -15,6 +15,7 @@ stop() ->
 
 loop(Req, _DocRoot) ->
     {Routes, Middlewares} = gen_server:call(rooster_config_srv, get_state),
+    Cors = gen_server:call(rooster_config_srv, get_cors),
     "/" ++ Path = Req:get(path),
     Request = #request{path=Path,
                        method=Req:get(method),
@@ -25,7 +26,7 @@ loop(Req, _DocRoot) ->
                        pathParams=[],
                        authorization=Req:get_header_value('Authorization')},
     try
-        Response = rooster:analyze_request(Request, Routes, Middlewares),
+        Response = rooster:analyze_request(Request, Routes, Middlewares, Cors),
         Req:respond(Response)
     catch
         Type:What ->
