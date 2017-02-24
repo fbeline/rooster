@@ -88,6 +88,18 @@ The method **exports** will return a list of tuples, the first argument is the m
 	
 The function return should be `{next|any(), any()}`. When something different from `next` is passed the rooster will not execute the following middleware/route and will return the Resp directly to the client. Otherwise the next middleware/route will be executed and the `Resp` parameter of it will be the Result of the current middleware, creating a chain of executions.
 
+#Benchmark
+
+The tests was made in a machine with 4 cores of 3.10GHz and 8gb of RAM running a Ubuntu OS version 16.04. All the tested API's was handling exactly the same request, under the minimal framework configuration.
+The tool used to benchmark the API's was the [wrk](https://github.com/wg/wrk).
+
+
+![benchmark](https://cloud.githubusercontent.com/assets/5730881/23285787/09a2bfb8-fa12-11e6-990e-6a7014f52122.png)
+
+
+You can find the complete information around this benchmark inside the file **benchmark.md**
+
+
 #Dependencies
 - mochiweb: HTTP server
 - jiffy: JSON parser
