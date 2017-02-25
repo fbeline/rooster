@@ -37,7 +37,7 @@ init({Port, Routes, Middlewares, Cors}) ->
     Web = web_specs(rooster_web, Port),
     RoosterConfig = register_rooster(Routes, Middlewares, Cors),
     Strategy = {one_for_one, 10, 10},
-    {ok, {Strategy, [Web, RoosterConfig]}}.
+    {ok, {Strategy, [RoosterConfig, Web]}}.
 
 %% @doc generate mochiweb specs to be used by supervisor
 %%

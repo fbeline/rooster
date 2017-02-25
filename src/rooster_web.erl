@@ -1,21 +1,21 @@
 -module(rooster_web).
 -include_lib("rooster.hrl").
 
--export([start/1, stop/0, loop/2]).
+-export([start/1, stop/0, loop/5]).
 
 start(Options) ->
     {DocRoot, Options1} = get_option(docroot, Options),
+    {Routes, Middlewares} = gen_server:call(rooster_config_srv, get_state),
+    Cors = gen_server:call(rooster_config_srv, get_cors),
     Loop = fun (Req) ->
-                   ?MODULE:loop(Req, DocRoot)
+                   ?MODULE:loop(Req, DocRoot, Routes, Middlewares, Cors) 
            end,
     mochiweb_http:start([{name, ?MODULE}, {loop, Loop} | Options1]).
 
 stop() ->
     mochiweb_http:stop(?MODULE).
 
-loop(Req, _DocRoot) ->
-    {Routes, Middlewares} = gen_server:call(rooster_config_srv, get_state),
-    Cors = gen_server:call(rooster_config_srv, get_cors),
+loop(Req, _DocRoot, Routes, Middlewares, Cors) ->
     "/" ++ Path = Req:get(path),
     Request = #request{path=Path,
                        method=Req:get(method),
