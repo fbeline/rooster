@@ -5,17 +5,16 @@
 
 start(Options) ->
     {DocRoot, Options1} = get_option(docroot, Options),
-    {Routes, Middlewares} = gen_server:call(rooster_config_srv, get_state),
-    Cors = gen_server:call(rooster_config_srv, get_cors),
+    {Routes, Middlewares, RespHeaders} = gen_server:call(rooster_config_srv, get_state),
     Loop = fun (Req) ->
-                   ?MODULE:loop(Req, DocRoot, Routes, Middlewares, Cors) 
+                   ?MODULE:loop(Req, DocRoot, Routes, Middlewares, RespHeaders) 
            end,
     mochiweb_http:start([{name, ?MODULE}, {loop, Loop} | Options1]).
 
 stop() ->
     mochiweb_http:stop(?MODULE).
 
-loop(Req, _DocRoot, Routes, Middlewares, Cors) ->
+loop(Req, _DocRoot, Routes, Middlewares, RespHeaders) ->
     "/" ++ Path = Req:get(path),
     Request = #request{path=Path,
                        method=Req:get(method),
@@ -26,7 +25,7 @@ loop(Req, _DocRoot, Routes, Middlewares, Cors) ->
                        pathParams=[],
                        authorization=Req:get_header_value('Authorization')},
     try
-        Response = rooster:analyze_request(Request, Routes, Middlewares, Cors),
+        Response = rooster:analyze_request(Request, Routes, Middlewares, RespHeaders),
         Req:respond(Response)
     catch
         Type:What ->

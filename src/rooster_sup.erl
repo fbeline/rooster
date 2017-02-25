@@ -1,4 +1,5 @@
 -module(rooster_sup).
+-include_lib("rooster.hrl").
 
 -behaviour(supervisor).
 
@@ -33,9 +34,10 @@ upgrade() ->
 
 %% @spec init([]) -> SupervisorTree
 %% @doc supervisor callback.
-init({Port, Routes, Middlewares, Cors}) ->
-    Web = web_specs(rooster_web, Port),
-    RoosterConfig = register_rooster(Routes, Middlewares, Cors),
+init(State) ->
+    io:format("~n~p~n", [State]),
+    Web = web_specs(rooster_web, State#config.port),
+    RoosterConfig = register_rooster(State),
     Strategy = {one_for_one, 10, 10},
     {ok, {Strategy, [RoosterConfig, Web]}}.
 
@@ -49,8 +51,8 @@ web_specs(Mod, Port) ->
 
 %% @doc generate rooster_config specs to be used by supervisor
 %%
-register_rooster(Routes, Middlewares, Cors) ->
-    {rooster_config_srv, {rooster_config_srv, start, [{Routes, Middlewares, Cors}]},
+register_rooster(State) ->
+    {rooster_config_srv, {rooster_config_srv, start, [State]},
      permanent,
      5000,
      worker,
