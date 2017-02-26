@@ -13,6 +13,7 @@
                  resp_headers=[] :: list({string(), string()})}).
 
 -type request() :: #request{}.
+-type config() :: #config{}.
 -type route() :: {module(), atom(), string(), any()}.
 -type middleware() :: {module(), atom(), string(), any()}.
 -type response() :: {integer(), any()}.

@@ -35,10 +35,10 @@ upgrade() ->
 %% @spec init([]) -> SupervisorTree
 %% @doc supervisor callback.
 init(State) ->
-    io:format("~n~p~n", [State]),
     Web = web_specs(rooster_web, State#config.port),
     RoosterConfig = register_rooster(State),
     Strategy = {one_for_one, 10, 10},
+    io:format("~nrooster listening on port ~p~n", [State#config.port]),
     {ok, {Strategy, [RoosterConfig, Web]}}.
 
 %% @doc generate mochiweb specs to be used by supervisor
