@@ -1,0 +1,8 @@
+[{<<"jiffy">>,
+  {git,"git://github.com/davisp/jiffy.git",
+       {ref,"06aaf440e091c9fd5f8aea557ac760a33bd37130"}},
+  0},
+ {<<"mochiweb">>,
+  {git,"git://github.com/mochi/mochiweb.git",
+       {ref,"aacb8f2e2fd98a729bd4f54e028c6b742bfb9dcb"}},
+  0}].

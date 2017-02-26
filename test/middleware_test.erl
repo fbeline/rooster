@@ -1,6 +1,6 @@
 -module(middleware_test).
 
--include_lib("../src/rooster.hrl").
+-include_lib("../include/rooster.hrl").
 -include_lib("eunit/include/eunit.hrl").
 
 -export([some_route_before/2, some_route_after/2]).
