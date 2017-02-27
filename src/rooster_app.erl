@@ -9,7 +9,6 @@
 %% @spec start(_Type, _StartArgs) -> ServerRet
 %% @doc application start callback for rooster.
 start(_Type, _StartArgs) ->
-    rooster_deps:ensure(),
     Options = #config{port=8080,
                       routes=[route_example],
                       resp_headers=[{"access-control-allow-methods", "*"},

@@ -7,7 +7,6 @@
 -export([handle_call/3, handle_cast/2, terminate/2, handle_info/2, code_change/3]).
 
 start(State) ->
-    io:format("~n~p~n", [State]),
     ParsedState = parse_state({State#config.routes, State#config.middlewares}),
     FinalState = erlang:insert_element(3, ParsedState, State#config.resp_headers),
     gen_server:start_link({local, ?MODULE}, ?MODULE, FinalState, []).

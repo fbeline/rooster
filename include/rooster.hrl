@@ -10,7 +10,8 @@
 -record(config, {port=8080 :: integer(),
                  routes=[] :: list(atom()),
                  middlewares=[] :: list(atom()),
-                 resp_headers=[] :: list({string(), string()})}).
+                 resp_headers=[] :: list({string(), string()}),
+                 static_path=["priv", "www"] :: list(string())}).
 
 -type request() :: #request{}.
 -type config() :: #config{}.

@@ -35,7 +35,7 @@ upgrade() ->
 %% @spec init([]) -> SupervisorTree
 %% @doc supervisor callback.
 init(State) ->
-    Web = web_specs(rooster_web, State#config.port),
+    Web = web_specs(rooster_web, State),
     RoosterConfig = register_rooster(State),
     Strategy = {one_for_one, 10, 10},
     io:format("~nrooster listening on port ~p~n", [State#config.port]),
@@ -43,10 +43,10 @@ init(State) ->
 
 %% @doc generate mochiweb specs to be used by supervisor
 %%
-web_specs(Mod, Port) ->
+web_specs(Mod, State) ->
     WebConfig = [{ip, {0,0,0,0}},
-                 {port, Port},
-                 {docroot, rooster_deps:local_path(["priv", "www"])}],
+                 {port, State#config.port},
+                 {docroot, rooster_deps:local_path(State#config.static_path)}],
     {Mod, {Mod, start, [WebConfig]}, permanent, 5000, worker, dynamic}.
 
 %% @doc generate rooster_config specs to be used by supervisor

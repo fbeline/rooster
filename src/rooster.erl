@@ -11,7 +11,7 @@ ensure_started(App) ->
             ok
     end.
 
-%% @doc Start the greeting server.
+%% @doc Start the rooster server.
 %%
 -spec start() -> ok.
 
@@ -21,7 +21,7 @@ start() ->
     application:start(rooster).
 
 
-%% @doc Stop the greeting server.
+%% @doc Stop the rooster server.
 %%
 -spec stop() -> ok.
 
@@ -43,4 +43,5 @@ analyze_request(Req, Routes, Middlewares, Cors) ->
 
 start_server(State) ->
     rooster_deps:ensure(),
+    ensure_started(crypto),
     rooster_sup:start_link(State).
