@@ -10,16 +10,46 @@
 #Installation
 1) Download and install [rebar3](https://www.rebar3.org/)
 
-2) Edit the file **rebar.config** and add the following lines inside deps:
+2) Create an application using rebar
+
+3) Edit the file **rebar.config** and add the following lines inside deps:
 
 	{deps, [
 	        ...
 	        {rooster, ".*", {git, "git://github.com/FelipeBB/rooster.git", {branch, "master"}}}
 	       ]}.
 
-3) Run the command: rebar3 compile
+4) Run the command: rebar3 compile
 
 That is it, we are ready to move foward.
+
+#Running the server
+
+Create a module similar to the following one:
+
+	-module(app).
+	-include_lib("rooster/include/rooster.hrl").
+
+	-export([start/0]).
+
+	start() ->
+		Options = #config{port=8080,
+				  routes=[route_example], % implemented routes
+				  middlewares=[], % implemented middlewares
+				  resp_headers=[{"access-control-allow-methods", "*"},
+				                {"access-control-allow-headers", "*"},
+				                {"access-control-allow-origin", "*"}]},
+		rooster:start_server(Options). 
+
+This module will be responsible for starting the server. The **#config** record is used to configure the server port, the response headers and also the implemented routes and middlewares that the framework should handle. With this module created just run the following command in the terminal and your server should start.
+
+	erl \
+	    -pa ebin _build/default/lib/*/ebin \
+	    -boot start_sasl \
+	    -s app \
+	    -s reloader
+	    
+if you see something like it`rooster listening on port 8080`, then everything is fine.
 
 #Route example
 Simple route example.
