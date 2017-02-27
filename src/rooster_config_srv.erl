@@ -30,7 +30,7 @@ handle_cast(stop, Env) ->
     {stop, normal, Env};
 
 handle_cast({set_state, State}, _State) ->
-    {noreply, parse_state(State)}.
+    {noreply, State}.
 
 handle_call(get_state, _From, State) ->
     {reply, State, State}.

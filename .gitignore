@@ -11,3 +11,6 @@
 *.swp
 *.beam
 *.dump
+/* middleware_example.erl */
+/* route_example.erl */
+starter.erl
