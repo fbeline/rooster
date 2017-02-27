@@ -44,4 +44,5 @@ analyze_request(Req, Routes, Middlewares, Cors) ->
 start_server(State) ->
     rooster_deps:ensure(),
     ensure_started(crypto),
-    rooster_sup:start_link(State).
+    rooster:start(normal, State).
+    % rooster_sup:start_link(State).
