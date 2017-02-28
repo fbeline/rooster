@@ -25,7 +25,8 @@ That is it, we are ready to move foward.
 
 #Running the server
 
-Create a module similar to the following one:
+Create a `app` module as the following one:
+*ps: The name for the starter module is a convention, if the `app` module doesn't exists the server will not start.*
 
 	-module(app).
 	-include_lib("rooster/include/rooster.hrl").
