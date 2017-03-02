@@ -46,7 +46,9 @@ init(State) ->
 web_specs(Mod, State) ->
     WebConfig = [{ip, {0,0,0,0}},
                  {port, State#config.port},
-                 {docroot, rooster_deps:local_path(State#config.static_path, app)}],
+                 {docroot, rooster_deps:local_path(State#config.static_path, app)},
+                 State#config.ssl
+                ],
     {Mod, {Mod, start, [WebConfig]}, permanent, 5000, worker, dynamic}.
 
 %% @doc generate rooster_config specs to be used by supervisor
