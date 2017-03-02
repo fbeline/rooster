@@ -7,7 +7,8 @@
                   authorization :: string(),
                   pathParams :: list()}).
 
--record(config, {port=8080 :: integer(),
+-record(config, {ip={0,0,0,0} :: {},
+                 port=8080 :: integer(),
                  routes=[] :: list(atom()),
                  middlewares=[] :: list(atom()),
                  resp_headers=[] :: list({string(), string()}),

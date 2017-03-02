@@ -45,7 +45,7 @@ init(State) ->
 %%
 web_specs(Mod, State) ->
     io:format("~n~p~n", [State]),
-    WebConfig = [{ip, {0,0,0,0}},
+    WebConfig = [{ip, State#config.ip},
                  {port, State#config.port},
                  {docroot, rooster_deps:local_path(State#config.static_path, app)},
                  State#config.ssl,

@@ -15,3 +15,5 @@ middleware_example.erl
 route_example.erl
 start.sh
 app.erl
+server_cert.pem
+server_key.pem
