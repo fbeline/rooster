@@ -44,10 +44,12 @@ init(State) ->
 %% @doc generate mochiweb specs to be used by supervisor
 %%
 web_specs(Mod, State) ->
+    io:format("~n~p~n", [State]),
     WebConfig = [{ip, {0,0,0,0}},
                  {port, State#config.port},
                  {docroot, rooster_deps:local_path(State#config.static_path, app)},
-                 State#config.ssl
+                 State#config.ssl,
+                 State#config.ssl_opts
                 ],
     {Mod, {Mod, start, [WebConfig]}, permanent, 5000, worker, dynamic}.
 

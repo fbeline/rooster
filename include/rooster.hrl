@@ -12,7 +12,8 @@
                  middlewares=[] :: list(atom()),
                  resp_headers=[] :: list({string(), string()}),
                  static_path=["priv", "www"] :: list(string()),
-                 ssl={ssl, false}}).
+                 ssl={ssl, false},
+                 ssl_opts={ssl_opts,[]}}).
 
 -type request() :: #request{}.
 -type config() :: #config{}.
