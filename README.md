@@ -5,6 +5,7 @@
 - **Middlewares**: Functions that have access to the request and the response, intercepting routes before and/or after execution, also can judge and decide if the next middleware/route in the application cycle will be executed.
 - **Basic Authentication**: Rooster provide a basic authentication module that can be easily integrated with middlewares.
 - **CORS configuration**: You are able to easily configure CORS for your application.
+- **HTTPS Support**
 - **0% down time**: You can change your code in real time! The changes will be available in the the next request (without stopping the application).
 
 #Installation
@@ -21,7 +22,7 @@
 
 4) Run the command: rebar3 compile
 
-That is it, we are ready to move foward.
+That is it, we are ready to move forward.
 
 #Running the server
 
@@ -56,7 +57,7 @@ if you see something like it`rooster listening on port 8080`, then everything is
 Simple route example.
 
 	-module(route_example).
-	-include_lib("rooster.hrl").
+	-include_lib("rooster/include/rooster.hrl").
 	-export([exports/0, get_products/2, save_product/2, get_product/2]).
 
 
@@ -95,9 +96,10 @@ Is important to note that the functions **must** have two parameters, **Req** an
 Follows an example of a middleware used to authenticate the API through basic authentication.
 
 	-module(middleware_example).
+	-include_lib("rooster/include/rooster.hrl").
 	-export([exports/0, basic_auth/2]).
 
-	-include_lib("rooster.hrl").
+
 
 	basic_auth(Req, Resp) ->
 	    Auth = Req#request.authorization,
@@ -118,6 +120,25 @@ The method **exports** will return a list of tuples, the first argument is the m
 	{'BEFORE'|'AFTER', RegEx, Method}
 	
 The function return should be `{next|any(), any()}`. When something different from `next` is passed the rooster will not execute the following middleware/route and will return the Resp directly to the client. Otherwise the next middleware/route will be executed and the `Resp` parameter of it will be the Result of the current middleware, creating a chain of executions.
+
+#SSL configuration
+After generate the ssl certifier for your domain, everything that need to be done is to pass some extra parameters in the application initialization (**ssl** and **ssl_opts**). Follows an example of how the `app.erl` should looks like:
+
+	-module(app).
+	-include_lib("rooster/include/rooster.hrl").
+
+	-export([start/0]).
+
+	start() ->
+	    Options = #config{port=443,
+		              routes=[example_route], % implemented routes
+		              ssl={ssl, true},
+		              ssl_opts={ssl_opts, [
+		                                   {certfile, "/etc/letsencrypt/live/{some.domain}/cert.pem"},
+		                                   {keyfile, "/etc/letsencrypt/live/{some.domain}/privkey.pem"}]}
+		             },
+	    rooster:start_server(Options).
+
 
 #Benchmark
 
