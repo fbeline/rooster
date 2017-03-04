@@ -1,15 +1,13 @@
--module(rooster_config_srv).
+-module(rooster_config).
 
 -behaviour(gen_server).
 -include_lib("rooster.hrl").
 
--export([start/1, stop/0, init/1]).
+-export([start/0, stop/0, init/1]).
 -export([handle_call/3, handle_cast/2, terminate/2, handle_info/2, code_change/3]).
 
-start(State) ->
-    ParsedState = parse_state({State#config.routes, State#config.middlewares}),
-    FinalState = erlang:insert_element(3, ParsedState, State#config.resp_headers),
-    gen_server:start_link({local, ?MODULE}, ?MODULE, FinalState, []).
+start() ->
+    gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
 
 stop() ->
     gen_server:cast(?MODULE, stop).
@@ -33,7 +31,21 @@ handle_cast({set_state, State}, _State) ->
     {noreply, State}.
 
 handle_call(get_state, _From, State) ->
-    {reply, State, State}.
+    NewState = app:exports(),
+    get_state(State, NewState).
+
+get_state(State = #state{version=Version}, #state{version=Version}) ->
+    Resp = {State#state.routes, State#state.middlewares, State#state.resp_headers},
+    {reply, Resp, State};
+
+get_state(_, NewState) ->
+    {Routes, Middlewares} = parse_state({NewState#state.routes, NewState#state.middlewares}),
+    FinalState = #state{routes=Routes,
+                        middlewares=Middlewares, 
+                        resp_headers=NewState#state.resp_headers,
+                        version=NewState#state.version},
+    Resp = {Routes, Middlewares, NewState#state.resp_headers},
+    {reply, Resp, FinalState}.
 
 %% @doc configure final routes/middlewares state
 %%
