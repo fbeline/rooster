@@ -30,18 +30,21 @@ Create a `app` module as the following one:
 *ps: The name for the starter module is a convention, if the `app` module doesn't exists the server will not start.*
 
 	-module(app).
-	-include_lib("rooster/include/rooster.hrl").
+	-include_lib("rooster.hrl").
 
-	-export([start/0]).
+	-export([start/0, exports/0]).
 
 	start() ->
-		Options = #config{port=8080,
-				  routes=[route_example], % implemented routes
-				  middlewares=[], % implemented middlewares
-				  resp_headers=[{"access-control-allow-methods", "*"},
-				                {"access-control-allow-headers", "*"},
-				                {"access-control-allow-origin", "*"}]},
-		rooster:start_server(Options). 
+	    Options = #config{port=8080},
+	    rooster:start_server(Options).
+
+	exports() ->
+	    #state{routes=[route_example],
+		   middlewares=[middleware_example],
+		   resp_headers=[{"access-control-allow-methods", "*"},
+		                 {"access-control-allow-headers", "*"},
+		                 {"access-control-allow-origin", "*"}],
+		   version="0.0.1"}.
 
 This module will be responsible for starting the server. The **#config** record is used to configure the server port, the response headers and also the implemented routes and middlewares that the framework should handle. With this module created just run the following command in the terminal and your server should start.
 
@@ -125,19 +128,26 @@ The function return should be `{next|any(), any()}`. When something different fr
 After generate the ssl certifier for your domain, everything that need to be done is to pass some extra parameters in the application initialization (**ssl** and **ssl_opts**). Follows an example of how the `app.erl` should looks like:
 
 	-module(app).
-	-include_lib("rooster/include/rooster.hrl").
+	-include_lib("rooster.hrl").
 
-	-export([start/0]).
+	-export([start/0, exports/0]).
 
 	start() ->
-	    Options = #config{port=443,
-		              routes=[example_route], % implemented routes
-		              ssl={ssl, true},
+	    Options = #config{port=8080,
+		              ssl={ssl, false},
 		              ssl_opts={ssl_opts, [
-		                                   {certfile, "/etc/letsencrypt/live/{some.domain}/cert.pem"},
-		                                   {keyfile, "/etc/letsencrypt/live/{some.domain}/privkey.pem"}]}
+		                                   {certfile, "src/server_cert.pem"},
+		                                   {keyfile, "src/server_key.pem"}]}
 		             },
 	    rooster:start_server(Options).
+
+	exports() ->
+	    #state{routes=[route_example],
+		   resp_headers=[{"access-control-allow-methods", "*"},
+		                 {"access-control-allow-headers", "*"},
+		                 {"access-control-allow-origin", "*"}],
+		   version="0.0.1"
+		  }.
 
 
 #Benchmark
