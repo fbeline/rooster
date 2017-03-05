@@ -30,7 +30,7 @@ Create a `app` module as the following one:
 *ps: The name for the starter module is a convention, if the `app` module doesn't exists the server will not start.*
 
 	-module(app).
-	-include_lib("rooster.hrl").
+	-include_lib("rooster/include/rooster.hrl").
 
 	-export([start/0, exports/0]).
 
@@ -128,7 +128,7 @@ The function return should be `{next|any(), any()}`. When something different fr
 After generate the ssl certifier for your domain, everything that need to be done is to pass some extra parameters in the application initialization (**ssl** and **ssl_opts**). Follows an example of how the `app.erl` should looks like:
 
 	-module(app).
-	-include_lib("rooster.hrl").
+	-include_lib("rooster/include/rooster.hrl").
 
 	-export([start/0, exports/0]).
 
