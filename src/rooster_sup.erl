@@ -44,7 +44,6 @@ init(State) ->
 %% @doc generate mochiweb specs to be used by supervisor
 %%
 web_specs(Mod, State) ->
-    io:format("~n~p~n", [State]),
     WebConfig = [{ip, State#config.ip},
                  {port, State#config.port},
                  {docroot, rooster_deps:local_path(State#config.static_path, app)},
