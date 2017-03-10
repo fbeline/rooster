@@ -125,7 +125,7 @@ The method **exports** will return a list of tuples, the first argument is the m
 The function return should be `{next|any(), any()}`. When something different from `next` is passed the rooster will not execute the following middleware/route and will return the Resp directly to the client. Otherwise the next middleware/route will be executed and the `Resp` parameter of it will be the Result of the current middleware, creating a chain of executions.
 
 #SSL configuration
-After generate the ssl certifier for your domain, everything that need to be done is to pass some extra parameters in the application initialization (**ssl** and **ssl_opts**). Follows an example of how the `app.erl` should looks like:
+After generate the ssl certifier for your domain, everything that need to be done is to pass some extra parameters in the application `start`  (**ssl** and **ssl_opts**). Follows an example of how the `app.erl` should looks like:
 
 	-module(app).
 	-include_lib("rooster/include/rooster.hrl").
