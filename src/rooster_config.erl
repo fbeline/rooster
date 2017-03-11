@@ -58,7 +58,7 @@ parse_state({Routes, Middlewares}) ->
 
 %% @doc add module to all routes and middlewares 
 %%
--spec add_module(list(route()), list()) -> list(route()).
+-spec add_module(list(), list()) -> list(route()).
 
 add_module([], Acc) -> Acc;
 add_module([M|T], Acc) ->

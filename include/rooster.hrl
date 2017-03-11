@@ -7,7 +7,7 @@
                   authorization :: string(),
                   pathParams :: list()}).
 
--record(config, {ip={0,0,0,0} :: {},
+-record(config, {ip={0,0,0,0} :: {integer(), integer(), integer(), integer()},
                  port=8080 :: integer(),
                  static_path=["priv", "www"] :: list(string()),
                  ssl={ssl, false},
