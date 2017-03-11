@@ -2,8 +2,8 @@
 
 #Features
 - **Routes** that supports `GET` `POST` `PUT` and `DELETE` methods.
-- **Middlewares**: Functions that have access to the request and the response, intercepting routes before and/or after execution, also can judge and decide if the next middleware/route in the application cycle will be executed.
-- **Basic Authentication**: Rooster provide a basic authentication module that can be easily integrated with middlewares.
+- **Middleware**: Functions that have access to the request and the response, intercepting routes before and/or after execution, also can judge and decide if the next middleware/route in the application cycle will be executed.
+- **Basic Authentication**: Rooster provide a basic authentication module that can be easily integrated with Middleware.
 - **CORS configuration**: You are able to easily configure CORS for your application.
 - **HTTPS Support**
 - **0% down time**: You can change your code in real time! The changes will be available in the the next request (without stopping the application).
@@ -40,13 +40,13 @@ Create a `app` module as the following one:
 
 	exports() ->
 	    #state{routes=[route_example],
-		   middlewares=[middleware_example],
+		   Middleware=[middleware_example],
 		   resp_headers=[{"access-control-allow-methods", "*"},
 		                 {"access-control-allow-headers", "*"},
 		                 {"access-control-allow-origin", "*"}],
 		   version="0.0.1"}.
 
-This module will be responsible for starting the server. The **#config** record is used to configure the server port, the response headers and also the implemented routes and middlewares that the framework should handle. With this module created just run the following command in the terminal and your server should start.
+This module will be responsible for starting the server. The **#config** record is used to configure the server port, the response headers and also the implemented routes and Middleware that the framework should handle. With this module created just run the following command in the terminal and your server should start.
 
 	erl \
 	    -pa ebin _build/default/lib/*/ebin \
@@ -81,7 +81,7 @@ Simple route example.
 
 The **exports** method is required, it will provide the list of available endpoints that this module contains. Each tuple should have the http method, the route itself and the function that will be executed. 
 
-Is important to note that the functions **must** have two parameters, **Req** and **Resp**, the `Resp` will contains the possible result of previous middlewares and the `Req` all the major information.
+Is important to note that the functions **must** have two parameters, **Req** and **Resp**, the `Resp` will contains the possible result of previous Middleware and the `Req` all the major information.
 
 	-record(request,{
 			 path,
@@ -125,7 +125,7 @@ The method **exports** will return a list of tuples, the first argument is the m
 The function return should be `{next|any(), any()}`. When something different from `next` is passed the rooster will not execute the following middleware/route and will return the Resp directly to the client. Otherwise the next middleware/route will be executed and the `Resp` parameter of it will be the Result of the current middleware, creating a chain of executions.
 
 #SSL configuration
-After generate the ssl certifier for your domain, everything that need to be done is to pass some extra parameters in the application `start`  (**ssl** and **ssl_opts**). Follows an example of how the `app.erl` should looks like:
+After generate the SSL certifier for your domain, everything that need to be done is to pass some extra parameters in the application `start`  (**ssl** and **ssl_opts**). Follows an example of how the `app.erl` should looks like:
 
 	-module(app).
 	-include_lib("rooster/include/rooster.hrl").
