@@ -39,14 +39,14 @@ Create a `app` module as the following one:
 	    rooster:start_server(Options).
 
 	exports() ->
-	    #state{routes=[route_example],
-		   Middleware=[middleware_example],
+	    #state{routes=[route_example], %route modules
+		   middleware=[middleware_example], %middleware modules
 		   resp_headers=[{"access-control-allow-methods", "*"},
 		                 {"access-control-allow-headers", "*"},
 		                 {"access-control-allow-origin", "*"}],
 		   version="0.0.1"}.
 
-This module will be responsible for starting the server. The **#config** record is used to configure the server port, the response headers and also the implemented routes and Middleware that the framework should handle. With this module created just run the following command in the terminal and your server should start.
+This module will be responsible for starting the server. The **#config** record is used to configure the server port, the response headers and also the implemented routes and middleware that the framework should handle. With this module created just run the following command in the terminal and your server should start.
 
 	erl \
 	    -pa ebin _build/default/lib/*/ebin \
@@ -81,7 +81,7 @@ Simple route example.
 
 The **exports** method is required, it will provide the list of available endpoints that this module contains. Each tuple should have the http method, the route itself and the function that will be executed. 
 
-Is important to note that the functions **must** have two parameters, **Req** and **Resp**, the `Resp` will contains the possible result of previous Middleware and the `Req` all the major information.
+Is important to note that the functions **must** have two parameters, **Req** and **Resp**, the `Resp` will contains the possible result of previous middleware and the `Req` all the major information.
 
 	-record(request,{
 			 path,
