@@ -40,11 +40,11 @@ Create a `app` module as the following one:
 
 	exports() ->
 	    #state{routes=[route_example], %route modules
-		   middleware=[middleware_example], %middleware modules
-		   resp_headers=[{"access-control-allow-methods", "*"},
-		                 {"access-control-allow-headers", "*"},
-		                 {"access-control-allow-origin", "*"}],
-		   version="0.0.1"}.
+               middleware=[middleware_example], %middleware modules
+               resp_headers=[{"access-control-allow-methods", "*"},
+                             {"access-control-allow-headers", "*"},
+                             {"access-control-allow-origin", "*"}],
+               version="0.0.1"}.
 
 This module will be responsible for starting the server. The **#config** record is used to configure the server port, the response headers and also the implemented routes and middleware that the framework should handle. With this module created just run the following command in the terminal and your server should start.
 
@@ -108,10 +108,10 @@ Follows an example of a middleware used to authenticate the API through basic au
 	    Auth = Req#request.authorization,
 	    Authorizated = rooster_basic_auth:is_authorized(Auth, {"admin", "admin"}),
 	    case Authorizated of
-		true ->
-		    {next, Resp};
-		_ ->
-		    {break, {403, {[{<<"reason">>, <<"Acess Forbidden">>}]}}}
+            true ->
+                {next, Resp};
+            _ ->
+                {break, {403, {[{<<"reason">>, <<"Acess Forbidden">>}]}}}
 	    end. 
 
 
@@ -143,11 +143,11 @@ After generate the SSL certifier for your domain, everything that need to be don
 
 	exports() ->
 	    #state{routes=[route_example],
-		   resp_headers=[{"access-control-allow-methods", "*"},
-		                 {"access-control-allow-headers", "*"},
-		                 {"access-control-allow-origin", "*"}],
-		   version="0.0.1"
-		  }.
+               resp_headers=[{"access-control-allow-methods", "*"},
+                             {"access-control-allow-headers", "*"},
+                             {"access-control-allow-origin", "*"}],
+               version="0.0.1"
+              }.
 
 
 #Benchmark
