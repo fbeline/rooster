@@ -34,8 +34,8 @@ loop(Req, _DocRoot, Routes, Middlewares, RespHeaders) ->
                       {type, Type}, {what, What},
                       {trace, erlang:get_stacktrace()}],
             error_logger:error_report(Report),
-            Req:respond({500, [{"Content-Type", "text/plain"}],
-                         "request failed, sorry\n"})
+            Msg = rooster_json:encode(#{message => <<"request failed, sorry">>}),
+            Req:respond({500, [{"Content-Type", "application/json"}], Msg})
     end.
 
 get_option(Option, Options) ->
