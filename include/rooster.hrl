@@ -14,7 +14,7 @@
                  ssl_opts={ssl_opts,[]}}).
 
 -record(state, {routes=[] :: list(atom()),
-                middlewares=[] :: list(atom()),
+                middleware=[] :: list(atom()),
                 resp_headers=[] :: list({string(), string()}),
                 version="0.0.0" :: string()}).
 

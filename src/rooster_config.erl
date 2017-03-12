@@ -35,19 +35,19 @@ handle_call(get_state, _From, State) ->
     get_state(State, NewState).
 
 get_state(State = #state{version=Version}, #state{version=Version}) ->
-    Resp = {State#state.routes, State#state.middlewares, State#state.resp_headers},
+    Resp = {State#state.routes, State#state.middleware, State#state.resp_headers},
     {reply, Resp, State};
 
 get_state(_, NewState) ->
-    {Routes, Middlewares} = parse_state({NewState#state.routes, NewState#state.middlewares}),
+    {Routes, Middleware} = parse_state({NewState#state.routes, NewState#state.middleware}),
     FinalState = #state{routes=Routes,
-                        middlewares=Middlewares, 
+                        middleware=Middleware, 
                         resp_headers=NewState#state.resp_headers,
                         version=NewState#state.version},
-    Resp = {Routes, Middlewares, NewState#state.resp_headers},
+    Resp = {Routes, Middleware, NewState#state.resp_headers},
     {reply, Resp, FinalState}.
 
-%% @doc configure final routes/middlewares state
+%% @doc configure final routes/middleware state
 %%
 -spec parse_state({list(), list()}) -> {list(route()), list(middleware())}.
 
@@ -56,7 +56,7 @@ parse_state({Routes, Middlewares}) ->
     NewMiddlewares = add_module(Middlewares, []),
     {NewRoutes, NewMiddlewares}. 
 
-%% @doc add module to all routes and middlewares 
+%% @doc add module to all routes and middleware
 %%
 -spec add_module(list(), list()) -> list(route()).
 
