@@ -12,6 +12,7 @@ stop() ->
     gen_server:cast(?MODULE, stop).
 
 init(Env) ->
+    process_flag(trap_exit, true),
     {ok, Env}.
 
 terminate(_Reason, _Env) ->

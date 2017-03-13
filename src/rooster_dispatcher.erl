@@ -34,7 +34,7 @@ call_route_function(Req, {Module, Function}, PathParams, Middlewares) ->
     NewRequest = #request{path=Req#request.path,
                           method=Req#request.method,
                           headers=Req#request.headers,
-                          body= decode_data_from_request(Req),
+                          body= Req#request.body,
                           qs=Req#request.qs,
                           cookies=Req#request.cookies,
                           pathParams=PathParams,
@@ -50,18 +50,6 @@ call_route_function(Req, {Module, Function}, PathParams, Middlewares) ->
             Resp
     end.
 
-
-%% @doc Get payload and parse to erlang struct
-%%
--spec decode_data_from_request(request()) -> any().
-
-decode_data_from_request(Req) ->
-    RecvBody = Req#request.body,
-    Data = case RecvBody of
-               undefined -> erlang:list_to_binary("{}");
-               Bin -> Bin
-           end,
-    rooster_json:decode(Data).
 
 %% @doc Parse a route in tokens
 %%

@@ -38,13 +38,6 @@ parse_route_path_params_test() ->
 	Tokens = rooster_dispatcher:parse_route("products/10/save/1"),
 	?assertEqual(["products", "10", "save", "1"], Tokens). 
 
-
-call_route_function_body_test() ->
-    Body = "{\n\t\"user\": \"felipe 1234\"\n}",
-    Req = #request{body=Body},
-    Resp = rooster_dispatcher:call_route_function(Req, {?MODULE, route_function}, {}, []),
-    ?assertEqual({[{<<"user">>, <<"felipe 1234">>}]}, Resp).
-
 call_route_function_pparam_test() ->
     Params = [{param1, 10}, {param2, 20}],
     Req = #request{},
