@@ -14,4 +14,8 @@ encode(Term) ->
 -spec decode(string()) -> any().
 
 decode(Term) ->
-    jiffy:decode(Term).
+    Data = case Term of
+               undefined -> erlang:list_to_binary("{}");
+               Bin -> Bin
+           end,
+    jiffy:decode(Data).

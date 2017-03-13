@@ -20,7 +20,7 @@ loop(Req, _DocRoot, Routes, Middlewares, RespHeaders) ->
         Request = #request{path=Path,
                            method=Req:get(method),
                            headers=Req:get(headers),
-                           body=decode_data_from_request(Req:recv_body()),
+                           body=rooster_json:decode(Req:recv_body()),
                            qs=Req:parse_qs(),
                            cookies=Req:parse_cookie(),
                            pathParams=[],
@@ -37,18 +37,6 @@ loop(Req, _DocRoot, Routes, Middlewares, RespHeaders) ->
             Msg = rooster_json:encode(#{message => <<"request failed, sorry">>}),
             Req:respond({500, [{"Content-Type", "application/json"}], Msg})
     end.
-
-%% @doc Get payload and parse to erlang struct
-%%
--spec decode_data_from_request(request()) -> any().
-
-decode_data_from_request(RecvBody) ->
-    Data = case RecvBody of
-               undefined -> erlang:list_to_binary("{}");
-               Bin -> Bin
-           end,
-    rooster_json:decode(Data).
-
 
 get_option(Option, Options) ->
     {proplists:get_value(Option, Options), proplists:delete(Option, Options)}.
