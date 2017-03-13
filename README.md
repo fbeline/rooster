@@ -46,7 +46,7 @@ Create a `app` module as the following one:
                              {"access-control-allow-origin", "*"}],
                version="0.0.1"}.
 
-This module will be responsible for starting the server. The **#config** record is used to configure the server port, the response headers and also the implemented routes and middleware that the framework should handle. With this module created just run the following command in the terminal and your server should start.
+This module will be responsible for starting the server. The **#state** record is used to configure the response headers and also the implemented routes and middleware that the framework should handle. With this module created just run the following command in the terminal and your server should start.
 
 	erl \
 	    -pa ebin _build/default/lib/*/ebin \
