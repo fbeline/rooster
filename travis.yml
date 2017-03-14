@@ -1,0 +1,5 @@
+language: erlang
+otp_release:
+    - 18.0
+install: "make"
+after_success: "make test"
