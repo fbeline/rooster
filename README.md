@@ -1,6 +1,6 @@
 # Rooster [![Build Status](https://travis-ci.org/FelipeBB/rooster.svg?branch=master)](https://travis-ci.org/FelipeBB/rooster) 
 Simplistic REST framework that runs on top of mochiweb.
-##Features
+## Features
 - **Routes** that supports `GET` `POST` `PUT` and `DELETE` methods.
 - **Middleware**: Functions that have access to the request and the response, intercepting routes before and/or after execution, also can judge and decide if the next middleware/route in the application cycle will be executed.
 - **Basic Authentication**: Rooster provide a basic authentication module that can be easily integrated with Middleware.
