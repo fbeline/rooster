@@ -32,11 +32,15 @@ handle_cast(stop, Env) ->
 handle_call({analyze_route, Req}, _From, {Routes, Middlewares, RespHeaders}) ->
     {Status, Response} = rooster_dispatcher:match_route(Req, Routes, Middlewares),
     Headers = [{"Content-type", "application/json"}] ++ RespHeaders,
-    case Status of
-        404 ->
-            Msg = rooster_json:encode(#{message => <<"Requested endpoint not found.">>}),
-            {stop, normal, {404, Headers, Msg}, []};
-        _ ->
-            {stop, normal, {Status, Headers, rooster_json:encode(Response)}, []}
-    end.
+    make_response(Status, Response, Headers).
 
+%% @doc build response based on status and headers
+%%
+-spec make_response(integer(), any(), list()) -> {atom(), atom(), tuple(), list()}.
+
+make_response(404, _, Headers) ->
+    Msg = rooster_json:encode(#{message => <<"Requested endpoint not found.">>}),
+    {stop, normal, {404, Headers, Msg}, []};
+
+make_response(Status, Response, Headers) ->
+    {stop, normal, {Status, Headers, rooster_json:encode(Response)}, []}.

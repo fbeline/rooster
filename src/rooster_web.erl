@@ -15,28 +15,35 @@ stop() ->
     mochiweb_http:stop(?MODULE).
 
 loop(Req, _DocRoot, Routes, Middlewares, RespHeaders) ->
-    "/" ++ Path = Req:get(path),
     try
-        Request = #request{path=Path,
-                           method=Req:get(method),
-                           headers=Req:get(headers),
-                           body=rooster_json:decode(Req:recv_body()),
-                           qs=Req:parse_qs(),
-                           cookies=Req:parse_cookie(),
-                           pathParams=[],
-                           authorization=Req:get_header_value('Authorization')},
-        Response = rooster:analyze_request(Request, Routes, Middlewares, RespHeaders),
+        Response = rooster:analyze_request(create_request(Req), Routes, Middlewares, RespHeaders),
         Req:respond(Response)
     catch
         Type:What ->
-            Report = ["web request failed for " ++ Path,
-                      {path, Path},
-                      {type, Type}, {what, What},
-                      {trace, erlang:get_stacktrace()}],
-            error_logger:error_report(Report),
-            Msg = rooster_json:encode(#{message => <<"request failed, sorry">>}),
-            Req:respond({500, [{"Content-Type", "application/json"}], Msg})
+            log_error(Type, What),
+            Req:respond({500, [{"Content-Type", "application/json"}], request_fail_msg()})
     end.
+
+create_request(Req) ->
+    "/" ++ Path = Req:get(path),
+    #request{
+       path=Path,
+       method=Req:get(method),
+       headers=Req:get(headers),
+       body=rooster_json:decode(Req:recv_body()),
+       qs=Req:parse_qs(),
+       cookies=Req:parse_cookie(),
+       pathParams=[],
+       authorization=Req:get_header_value('Authorization')}.
+
+request_fail_msg() ->
+    rooster_json:encode(#{message => <<"request failed, sorry">>}).
+
+log_error(Type, What) ->
+    Report = ["web request failed",
+              {type, Type}, {what, What},
+              {trace, erlang:get_stacktrace()}],
+    error_logger:error_report(Report).
 
 get_option(Option, Options) ->
     {proplists:get_value(Option, Options), proplists:delete(Option, Options)}.
