@@ -1,6 +1,6 @@
-#Rooster [![Build Status](https://travis-ci.org/FelipeBB/rooster.svg?branch=master)](https://travis-ci.org/FelipeBB/rooster) 
+# Rooster [![Build Status](https://travis-ci.org/FelipeBB/rooster.svg?branch=master)](https://travis-ci.org/FelipeBB/rooster) 
 Simplistic REST framework that runs on top of mochiweb.
-##Features
+## Features
 - **Routes** that supports `GET` `POST` `PUT` and `DELETE` methods.
 - **Middleware**: Functions that have access to the request and the response, intercepting routes before and/or after execution, also can judge and decide if the next middleware/route in the application cycle will be executed.
 - **Basic Authentication**: Rooster provide a basic authentication module that can be easily integrated with Middleware.
@@ -8,7 +8,7 @@ Simplistic REST framework that runs on top of mochiweb.
 - **HTTPS Support**
 - **0% down time**: You can change your code in real time! The changes will be available in the the next request (without stopping the application).
 
-##Installation
+## Installation
 1) Download and install [rebar3](https://www.rebar3.org/)
 
 2) Create an application using rebar
@@ -24,7 +24,7 @@ Simplistic REST framework that runs on top of mochiweb.
 
 That is it, we are ready to move forward.
 
-##Running the server
+## Running the server
 
 Create a `app` module as the following one:
 *ps: The name for the starter module is a convention, if the `app` module doesn't exists the server will not start.*
@@ -56,7 +56,7 @@ This module will be responsible for starting the server. The **#state** record i
 	    
 if you see something like it`rooster listening on port 8080`, then everything is fine.
 
-##Route example
+## Route example
 Simple route example.
 
 	-module(route_example).
@@ -94,7 +94,7 @@ Is important to note that the functions **must** have two parameters, **Req** an
 			 pathParams
 			}).
 
-##Middleware example
+## Middleware example
 
 Follows an example of a middleware used to authenticate the API through basic authentication.
 
@@ -124,7 +124,7 @@ The method **exports** will return a list of tuples, the first argument is the m
 	
 The function return should be `{next|any(), any()}`. When something different from `next` is passed the rooster will not execute the following middleware/route and will return the Resp directly to the client. Otherwise the next middleware/route will be executed and the `Resp` parameter of it will be the Result of the current middleware, creating a chain of executions.
 
-##SSL configuration
+## SSL configuration
 After generate the SSL certifier for your domain, everything that need to be done is to pass some extra parameters in the application `start`  (**ssl** and **ssl_opts**). Follows an example of how the `app.erl` should looks like:
 
 	-module(app).
@@ -150,7 +150,7 @@ After generate the SSL certifier for your domain, everything that need to be don
               }.
 
 
-##Benchmark
+## Benchmark
 
 The tests was made in a machine with 4 cores of 3.10GHz and 8gb of RAM running a Ubuntu OS version 16.04. All the tested API's was handling exactly the same request, under the minimal framework configuration.
 The tool used to benchmark the API's was the [wrk](https://github.com/wg/wrk).
@@ -162,7 +162,7 @@ The tool used to benchmark the API's was the [wrk](https://github.com/wg/wrk).
 You can find the complete information around this benchmark inside the file **benchmark.md**
 
 
-##Dependencies
+## Dependencies
 - mochiweb: HTTP server
 - jiffy: JSON parser
 
