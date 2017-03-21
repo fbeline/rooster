@@ -28,28 +28,39 @@ match_route(Route, M1, Req, [_|T], Middlewares) -> match_route(Route, M1, Req, T
 
 %% @doc Call route function
 %%
--spec call_route_function(request(), {module(), atom()}, list(), list(middleware())) -> response().
+-spec call_route_function(request(), {module(), function()}, list(), list(middleware())) -> response().
 
 call_route_function(Req, {Module, Function}, PathParams, Middlewares) ->
-    NewRequest = #request{path=Req#request.path,
-                          method=Req#request.method,
-                          headers=Req#request.headers,
-                          body= Req#request.body,
-                          qs=Req#request.qs,
-                          cookies=Req#request.cookies,
-                          pathParams=PathParams,
-                          authorization=Req#request.authorization},
+    NewRequest = create_request(Req, PathParams),
+    {Instruction, Resp} = rooster_middleware:match('BEFORE', NewRequest, Middlewares, undefined),
+    execute_next(Instruction, NewRequest, {Module, Function, Middlewares}, Resp).
 
-    RespBefore = rooster_middleware:match('BEFORE', NewRequest, Middlewares, undefined),
-    case RespBefore of
-        {next, Resp} ->
-            RouteResp = apply(Module, Function, [NewRequest, Resp]),
-            {_, AfterResponse} = rooster_middleware:match('AFTER', NewRequest, Middlewares, RouteResp),
-            AfterResponse;
-        {_, Resp} ->
-            Resp
-    end.
+%% @doc execute next el in the application cycle
+%%
+-spec execute_next(atom(), request(), {module(), function(), list(middleware())}, any()) -> any().
 
+execute_next(next, Req, {Module, Function, Middlewares}, Resp) ->
+    RouteResp = apply(Module, Function, [Req, Resp]),
+    {_, AfterResponse} = rooster_middleware:match('AFTER', Req, Middlewares, RouteResp),
+    AfterResponse;
+
+execute_next(_, _, _, Resp) ->
+    Resp.
+
+%% @doc create request with path params
+%%
+-spec create_request(request(), any()) -> request().
+
+create_request(Req, PathParams) ->
+    #request{
+       path=Req#request.path,
+       method=Req#request.method,
+       headers=Req#request.headers,
+       body= Req#request.body,
+       qs=Req#request.qs,
+       cookies=Req#request.cookies,
+       pathParams=PathParams,
+       authorization=Req#request.authorization}.
 
 %% @doc Parse a route in tokens
 %%
