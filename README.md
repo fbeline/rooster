@@ -27,7 +27,8 @@ That is it, we are ready to move forward.
 ## Running the server
 
 Create a `app` module as the following one:
-*ps: The name for the starter module is a convention, if the `app` module doesn't exists the server will not start.*
+*Obs 1: The name for the starter module is a convention, if the `app` module doesn't exists the server will not start.*
+*Obs 2: The `start` method is not needed as you can initialize `rooster_sup` directly from the supervisor of your application.*
 
 	-module(app).
 	-include_lib("rooster/include/rooster.hrl").
@@ -36,7 +37,7 @@ Create a `app` module as the following one:
 
 	start() ->
 	    Options = #config{port=8080},
-	    rooster:start_server(Options).
+	    rooster:start(Options).
 
 	exports() ->
 	    #state{routes=[route_example], %route modules
@@ -150,6 +151,12 @@ After generate the SSL certifier for your domain, everything that need to be don
               }.
 
 
+## Hot code reloading
+
+For the routes/middleware that already exists everything that need to be done is to recompile de modified modules and the changes will be available in the next request.
+
+For new modules the only difference is that they need to be exported inside the `app.erl` and the `version` must be incremented. Then just compile the `app.erl` and that is it, your new routes/middleware will be handled.
+
 ## Benchmark
 
 The tests was made in a machine with 4 cores of 3.10GHz and 8gb of RAM running a Ubuntu OS version 16.04. All the tested API's was handling exactly the same request, under the minimal framework configuration.
@@ -166,5 +173,5 @@ You can find the complete information around this benchmark inside the file **be
 - mochiweb: HTTP server
 - jiffy: JSON parser
 
-##License
+## License
 MIT
