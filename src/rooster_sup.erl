@@ -36,7 +36,7 @@ upgrade() ->
 %% @doc supervisor callback.
 init(State) ->
     Web = web_specs(rooster_web, State),
-    RoosterConfig = register_rooster(),
+    RoosterConfig = rooster_config_specs(),
     Strategy = {one_for_one, 10, 10},
     io:format("~nrooster listening on port ~p~n", [State#config.port]),
     {ok, {Strategy, [RoosterConfig, Web]}}.
@@ -54,7 +54,7 @@ web_specs(Mod, State) ->
 
 %% @doc generate rooster_config specs to be used by supervisor
 %%
-register_rooster() ->
+rooster_config_specs() ->
     {rooster_config, {rooster_config, start, []},
      permanent,
      5000,
