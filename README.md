@@ -83,17 +83,6 @@ The **exports** method is required, it will provide the list of available endpoi
 
 Is important to note that the functions **must** have two parameters, **Req** and **Resp**, the `Resp` will contains the possible result of previous middleware and the `Req` all the major information.
 
-	-record(request,{
-			 path,
-			 method,
-			 headers,
-			 body,
-			 qs,
-			 cookies,
-			 authorization,
-			 pathParams
-			}).
-
 ## Middleware example
 
 Follows an example of a middleware used to authenticate the API through basic authentication.
