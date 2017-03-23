@@ -15,10 +15,7 @@ Simplistic REST framework that runs on top of mochiweb.
 
 3) Edit the file **rebar.config** and add the following lines inside deps:
 
-	{deps, [
-	        ...
-	        {rooster, ".*", {git, "git://github.com/FelipeBB/rooster.git", {branch, "master"}}}
-	       ]}.
+	{deps, [ {rooster, ".*", {git, "git://github.com/FelipeBB/rooster.git", {branch, "master"}}} ]}.
 
 4) Run the command: rebar3 compile
 
@@ -27,7 +24,9 @@ That is it, we are ready to move forward.
 ## Running the server
 
 Create a `app` module as the following one:
+
 *Obs 1: The name for the starter module is a convention, if the `app` module doesn't exists the server will not start.*
+
 *Obs 2: The `start` method is not needed as you can initialize `rooster_sup` directly from the supervisor of your application.*
 
 	-module(app).
