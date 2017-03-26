@@ -100,7 +100,7 @@ Follows an example of a middleware used to authenticate the API through basic au
             true ->
                 {next, Resp};
             _ ->
-                {break, {403, {[{<<"reason">>, <<"Acess Forbidden">>}]}}}
+                {break, {401, {[{<<"reason">>, <<"Unauthorized">>}]}}}
 	    end. 
 
 
