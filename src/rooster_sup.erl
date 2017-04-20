@@ -34,7 +34,7 @@ upgrade() ->
 
 %% @spec init([]) -> SupervisorTree
 %% @doc supervisor callback.
-init(State) ->
+init([State]) ->
     Web = web_specs(rooster_web, State),
     RoosterConfig = rooster_config_specs(),
     Strategy = {one_for_one, 10, 10},

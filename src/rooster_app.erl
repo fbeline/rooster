@@ -11,7 +11,7 @@
 start(_Type, _StartArgs) ->
     Options = gen_server:call(rooster_holder, get_state),
     rooster_holder:stop(),
-    rooster_sup:start_link(Options).
+    rooster_sup:start_link([Options]).
 
 %% @spec stop(_State) -> ServerRet
 %% @doc application stop callback for rooster.
