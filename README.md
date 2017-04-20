@@ -159,7 +159,7 @@ You can find the complete information around this benchmark inside the file **be
 
 ## Dependencies
 - mochiweb: HTTP server
-- jiffy: JSON parser
+- jsx: JSON parser
 
 ## License
 MIT

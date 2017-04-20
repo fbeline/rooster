@@ -7,7 +7,7 @@
 -spec encode(any()) -> string().
 
 encode(Term) ->
-    jiffy:encode(Term).
+    jsx:encode(Term).
 
 %% @doc json to erlang
 %%
@@ -18,4 +18,4 @@ decode(Term) ->
                undefined -> erlang:list_to_binary("{}");
                Bin -> Bin
            end,
-    jiffy:decode(Data).
+    jsx:decode(Data).
