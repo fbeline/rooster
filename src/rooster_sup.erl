@@ -46,7 +46,7 @@ init(State) ->
 web_specs(Mod, State) ->
     WebConfig = [{ip, State#config.ip},
                  {port, State#config.port},
-                 {docroot, rooster_deps:local_path(State#config.static_path, app)},
+                 {docroot, rooster_deps:local_path(State#config.static_path, ?MODULE)},
                  State#config.ssl,
                  State#config.ssl_opts
                 ],
