@@ -1,5 +1,5 @@
 language: erlang
 otp_release:
     - 18.0
-install: "make"
+install: "make all"
 after_success: "make test"
