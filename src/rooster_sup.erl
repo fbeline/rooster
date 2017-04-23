@@ -38,6 +38,7 @@ init(State) ->
     Web = web_specs(rooster_web, State),
     RoosterConfig = rooster_config_specs(),
     Strategy = {one_for_one, 10, 10},
+    rooster_deps:ensure(),
     io:format("~nrooster listening on port ~p~n", [State#config.port]),
     {ok, {Strategy, [RoosterConfig, Web]}}.
 

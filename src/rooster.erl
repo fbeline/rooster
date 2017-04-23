@@ -20,7 +20,6 @@ ensure_started(App) ->
 -spec start(config()) -> 'ignore' | {'error',_} | {'ok',pid()}.
 
 start(State) ->
-    rooster_deps:ensure(),
     ensure_started(crypto),
     rooster_holder:start(State),
     application:start(rooster).
