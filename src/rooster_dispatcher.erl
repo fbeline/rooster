@@ -8,8 +8,8 @@
 %%
 -spec match_route(request(), list(route()), list(middleware())) -> response().
 
-match_route(Req, Routes, Middlewares) ->
-    match_route(Req#request.path, Req#request.method, Req, Routes, Middlewares).
+match_route(#{path := Path, method := Method} = Req, Routes, Middlewares) ->
+    match_route(Path, Method, Req, Routes, Middlewares).
 
 
 match_route(_,_,_Req, [],_) -> {404, []};
@@ -52,15 +52,7 @@ execute_next(_, _, _, Resp) ->
 -spec create_request(request(), any()) -> request().
 
 create_request(Req, PathParams) ->
-    #request{
-       path=Req#request.path,
-       method=Req#request.method,
-       headers=Req#request.headers,
-       body= Req#request.body,
-       qs=Req#request.qs,
-       cookies=Req#request.cookies,
-       pathParams=PathParams,
-       authorization=Req#request.authorization}.
+    Req#{pathParams := PathParams}.
 
 %% @doc Parse a route in tokens
 %%

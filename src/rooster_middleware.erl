@@ -8,8 +8,8 @@
 -spec match(atom(), request(), [middleware()], any()) -> any().
 
 match(_, _, [], Resp) -> {next, Resp};
-match(Type, Req, Middleware = [{_, Type, Regex, _}|_], Resp) ->
-    Match = re:run(Req#request.path, Regex),
+match(Type, #{path := Path} = Req, Middleware = [{_, Type, Regex, _}|_], Resp) ->
+    Match = re:run(Path, Regex),
     middleware_regex_match(Match, Req, Middleware, Resp);
 
 match(Type, Req, [_|T], Resp) ->

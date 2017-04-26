@@ -26,15 +26,15 @@ loop(Req, _DocRoot, Routes, Middlewares, RespHeaders) ->
 
 create_request(Req) ->
     "/" ++ Path = Req:get(path),
-    #request{
-       path=Path,
-       method=Req:get(method),
-       headers=Req:get(headers),
-       body=rooster_json:decode(Req:recv_body()),
-       qs=Req:parse_qs(),
-       cookies=Req:parse_cookie(),
-       pathParams=[],
-       authorization=Req:get_header_value('Authorization')}.
+    #{
+       path => Path,
+       method => Req:get(method),
+       headers => Req:get(headers),
+       body => rooster_json:decode(Req:recv_body()),
+       qs => Req:parse_qs(),
+       cookies => Req:parse_cookie(),
+       pathParams => [],
+       authorization => Req:get_header_value('Authorization')}.
 
 request_fail_msg() ->
     rooster_json:encode(#{message => <<"request failed, sorry">>}).
