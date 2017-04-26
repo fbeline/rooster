@@ -1,12 +1,12 @@
 PREFIX:=../
 DEST:=$(PREFIX)$(PROJECT)
 
-REBAR=./rebar
+REBAR=./rebar3
 
 .PHONY: all edoc test clean build_plt dialyzer app
 
 all:
-	@$(REBAR) prepare-deps
+	@$(REBAR) compile
 
 edoc: all
 	@$(REBAR) doc
