@@ -40,12 +40,11 @@ parse_route_path_params_test() ->
 
 call_route_function_pparam_test() ->
     Params = [{param1, 10}, {param2, 20}],
-    Req = #request{},
-    Resp = rooster_dispatcher:call_route_function(Req, {?MODULE, route_function_pparam}, Params, []),
+    Resp = rooster_dispatcher:call_route_function(#{pathParams => []}, {?MODULE, route_function_pparam}, Params, []),
     ?assertEqual(Params, Resp).
 
-route_function(Req, _Resp) ->
-    Req#request.body.
+route_function(#{body := Body}, _Resp) ->
+    Body.
 
-route_function_pparam(Req, _Resp) ->
-    Req#request.pathParams.
+route_function_pparam(#{pathParams := PathParams}, _Resp) ->
+    PathParams.

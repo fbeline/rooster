@@ -7,18 +7,18 @@
 
 match_before_test() ->
     Middlewares = exports(),
-    Req = #request{path="lena/soderberg"},
+    Req = #{path => "lena/soderberg"},
     {_,Resp} = rooster_middleware:match('BEFORE', Req, Middlewares, undefined),
     ?assertEqual("hi", Resp).
 
 match_after_test() ->
     Middlewares = exports(),
-    Req = #request{path="lena/soderberg"},
+    Req = #{path => "lena/soderberg"},
     {_,Resp} = rooster_middleware:match('AFTER', Req, Middlewares, "hi,"),
     ?assertEqual("hi, my dear", Resp).
 
 no_middleware_test() ->
-    {next,Resp} = rooster_middleware:match('BEFORE', #request{}, [], undefined),
+    {next,Resp} = rooster_middleware:match('BEFORE', #{}, [], undefined),
     ?assertEqual(undefined, Resp).
 
 some_route_before(_Req, _Resp) ->
