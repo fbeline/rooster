@@ -39,8 +39,8 @@ Create a `app` module as the following one:
 		#{routes => [route_example],
 		version => "0.0.1",
 		resp_headers => [{"access-control-allow-methods", "*"},
-						{"access-control-allow-headers", "*"},
-						{"access-control-allow-origin", "*"}]}.
+				{"access-control-allow-headers", "*"},
+				{"access-control-allow-origin", "*"}]}.
 
 
 This module will be responsible for starting the server. The **#state** record is used to configure the response headers and also the implemented routes and middleware that the framework should handle. With this module created just run the following command in the terminal and your server should start.
@@ -111,20 +111,20 @@ After generate the SSL certifier for your domain, everything that need to be don
 
 
     start() ->
-		Options = #{port => 8080,
-				ssl => {ssl, false},
-				ssl_opts => {ssl_opts, [
-								{certfile, "src/server_cert.pem"},
-								{keyfile, "src/server_key."}
-							]}},
-		rooster:start_server(Options).
+	Options = #{port => 8080,
+	ssl => {ssl, false},
+	ssl_opts => {ssl_opts, [
+				{certfile, "src/server_cert.pem"},
+				{keyfile, "src/server_key."}
+			]}},
+	rooster:start_server(Options).
 
     exports() ->
-		#{routes => [route_example],
-		resp_headers => [{"access-control-allow-methods", "*"},
-						{"access-control-allow-headers", "*"},
-						{"access-control-allow-origin", "*"}],
-		version => "0.0.0"}.
+	#{routes => [route_example],
+	resp_headers => [{"access-control-allow-methods", "*"},
+			{"access-control-allow-headers", "*"},
+			{"access-control-allow-origin", "*"}],
+	version => "0.0.0"}.
 
 ## Hot code reloading
 
