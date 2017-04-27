@@ -106,25 +106,24 @@ The function return should be `{next|any(), any()}`. When something different fr
 ## SSL configuration
 After generate the SSL certifier for your domain, everything that need to be done is to pass some extra parameters in the application `start`  (**ssl** and **ssl_opts**). Follows an example of how the `app.erl` should looks like:
 
-    -module(app).
-    -export([start/0, exports/0]).
+	-module(app).
+	-export([start/0, exports/0]).
 
+	start() ->
+		Options = #{port => 8080,
+		ssl => {ssl, false},
+		ssl_opts => {ssl_opts, [
+					{certfile, "src/server_cert.pem"},
+					{keyfile, "src/server_key."}
+				]}},
+		rooster:start_server(Options).
 
-    start() ->
-	Options = #{port => 8080,
-	ssl => {ssl, false},
-	ssl_opts => {ssl_opts, [
-				{certfile, "src/server_cert.pem"},
-				{keyfile, "src/server_key."}
-			]}},
-	rooster:start_server(Options).
-
-    exports() ->
-	#{routes => [route_example],
-	resp_headers => [{"access-control-allow-methods", "*"},
-			{"access-control-allow-headers", "*"},
-			{"access-control-allow-origin", "*"}],
-	version => "0.0.0"}.
+	exports() ->
+		#{routes => [route_example],
+		resp_headers => [{"access-control-allow-methods", "*"},
+				{"access-control-allow-headers", "*"},
+				{"access-control-allow-origin", "*"}],
+		version => "0.0.0"}.
 
 ## Hot code reloading
 
