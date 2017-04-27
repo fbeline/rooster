@@ -6,6 +6,9 @@
 -export([start/0, stop/0, init/1]).
 -export([handle_call/3, handle_cast/2, terminate/2, handle_info/2, code_change/3]).
 
+%% public API
+%%
+
 start() ->
     gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
 
@@ -17,6 +20,9 @@ init(Env) ->
 
 terminate(_Reason, _Env) ->
     ok.
+
+%% server callbacks
+%%
 
 handle_info({'EXIT', _Pid, _Reason}, State) ->
     {noreply, State}.
@@ -34,18 +40,18 @@ handle_call(get_state, _From, State) ->
     NewState = app:exports(),
     get_state(State, NewState).
 
-get_state(State = #state{version=Version}, #state{version=Version}) ->
-    Resp = {State#state.routes, State#state.middleware, State#state.resp_headers},
-    {reply, Resp, State};
+%% private functions
+%%
 
-get_state(_, NewState) ->
-    {Routes, Middleware} = parse_state({NewState#state.routes, NewState#state.middleware}),
-    FinalState = #state{routes=Routes,
-                        middleware=Middleware, 
-                        resp_headers=NewState#state.resp_headers,
-                        version=NewState#state.version},
-    Resp = {Routes, Middleware, NewState#state.resp_headers},
-    {reply, Resp, FinalState}.
+get_state(State = #{version := Version}, #{version := Version}) ->
+    {reply, State, State};
+
+get_state(_, State) ->
+    NewState = rooster_util:forge_state(State),
+    Params = {maps:get(routes, NewState, []), maps:get(middleware, NewState, [])},
+    {Routes, Middleware} = parse_state(Params),
+    FinalState = maps:merge(NewState, #{routes => Routes, middleware => Middleware}),
+    {reply, FinalState, FinalState}.
 
 %% @doc configure final routes/middleware state
 %%

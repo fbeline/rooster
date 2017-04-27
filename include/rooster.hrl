@@ -1,7 +1,7 @@
--record(state, {routes=[] :: list(atom()),
-                middleware=[] :: list(atom()),
-                resp_headers=[] :: list({string(), string()}),
-                version="0.0.0" :: string()}).
+-type state() :: #{routes => list(atom()),
+                    middleware => list(atom()),
+                    resp_headers => list({string(), string()}),
+                    version => string()}.
 
 -type request() :: #{path => string(),
                     method => atom(),
@@ -18,7 +18,6 @@
                    ssl => any(),
                    ssl_opts => any()}.
 
--type state() :: #state{}.
 -type route() :: {module(), atom(), string(), any()}.
 -type middleware() :: {module(), atom(), string(), any()}.
 -type response() :: {integer(), any()}.

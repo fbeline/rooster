@@ -8,8 +8,8 @@
 %%
 -spec match_route(request(), list(route()), list(middleware())) -> response().
 
-match_route(#{path := Path, method := Method} = Req, Routes, Middlewares) ->
-    match_route(Path, Method, Req, Routes, Middlewares).
+match_route(#{path := Path, method := Method} = Req, Routes, Middleware) ->
+    match_route(Path, Method, Req, Routes, Middleware).
 
 
 match_route(_,_,_Req, [],_) -> {404, []};

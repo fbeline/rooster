@@ -1,5 +1,11 @@
 -module(rooster_util).
--export([forge_config/1]).
+-include_lib("rooster.hrl").
+
+-export([forge_config/1, forge_state/1]).
+
+%% create default behaviour of config 
+%%
+-spec forge_config(config()) -> config().
 
 forge_config(Conf) ->
     Default = #{ip => {0,0,0,0},
@@ -7,4 +13,16 @@ forge_config(Conf) ->
                 static_path => ["priv", "www"],
                 ssl => {ssl, false},
                 ssl_opts => {ssl_opts, []}},
-    maps:merge(Conf, Default).
+    maps:merge(Default, Conf).
+
+
+%% create default behaviour of state
+%%
+-spec forge_state(state()) -> state().
+
+forge_state(State) ->
+    Default = #{routes => [],
+                middleware => [],
+                resp_headers => [],
+                version => "0.0.0"},
+    maps:merge(Default, State).
