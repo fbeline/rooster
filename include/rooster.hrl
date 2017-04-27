@@ -1,9 +1,3 @@
--record(config, {ip={0,0,0,0} :: {integer(), integer(), integer(), integer()},
-                 port=8080 :: integer(),
-                 static_path=["priv", "www"] :: list(string()),
-                 ssl={ssl, false},
-                 ssl_opts={ssl_opts,[]}}).
-
 -record(state, {routes=[] :: list(atom()),
                 middleware=[] :: list(atom()),
                 resp_headers=[] :: list({string(), string()}),
@@ -18,7 +12,12 @@
                     authorization => string(),
                     pathParams => list()}.
 
--type config() :: #config{}.
+-type config() :: #{ip => {integer(), integer(), integer(), integer()},
+                   port => integer(),
+                   static_path => list(string()),
+                   ssl => any(),
+                   ssl_opts => any()}.
+
 -type state() :: #state{}.
 -type route() :: {module(), atom(), string(), any()}.
 -type middleware() :: {module(), atom(), string(), any()}.

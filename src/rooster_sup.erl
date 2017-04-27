@@ -12,7 +12,8 @@
 %% @spec start_link() -> ServerRet
 %% @doc API for starting the supervisor.
 start_link(State) ->
-    supervisor:start_link({local, ?MODULE}, ?MODULE, State).
+    Conf = rooster_util:forge_config(State), 
+    supervisor:start_link({local, ?MODULE}, ?MODULE, Conf).
 
 %% @spec upgrade() -> ok
 %% @doc Add processes if necessary.
@@ -34,23 +35,21 @@ upgrade() ->
 
 %% @spec init([]) -> SupervisorTree
 %% @doc supervisor callback.
-init(State) ->
-    Web = web_specs(rooster_web, State),
+init(#{port := Port} = Conf) ->
+    Web = web_specs(rooster_web, Conf),
     RoosterConfig = rooster_config_specs(),
-    Strategy = {one_for_one, 10, 10},
     rooster_deps:ensure(),
-    io:format("~nrooster listening on port ~p~n", [State#config.port]),
-    {ok, {Strategy, [RoosterConfig, Web]}}.
+    io:format("~nrooster listening on port ~p~n", [Port]),
+    {ok, {{one_for_one, 10, 10}, [RoosterConfig, Web]}}.
 
 %% @doc generate mochiweb specs to be used by supervisor
 %%
-web_specs(Mod, State) ->
-    WebConfig = [{ip, State#config.ip},
-                 {port, State#config.port},
-                 {docroot, rooster_deps:local_path(State#config.static_path, ?MODULE)},
-                 State#config.ssl,
-                 State#config.ssl_opts
-                ],
+web_specs(Mod, #{ip := Ip, port := Port, static_path := Sp, ssl := Ssl, ssl_opts := Ssl_opts}) ->
+    WebConfig = [{ip, Ip},
+                 {port, Port},
+                 {docroot, rooster_deps:local_path(Sp, ?MODULE)},
+                 Ssl,
+                 Ssl_opts],
     {Mod, {Mod, start, [WebConfig]}, permanent, 5000, worker, dynamic}.
 
 %% @doc generate rooster_config specs to be used by supervisor
