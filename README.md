@@ -29,22 +29,19 @@ Create a `app` module as the following one:
 
 *Obs 2: The `start` method is not needed as you can initialize `rooster_sup` directly from the supervisor of your application.*
 
-	-module(app).
-	-include_lib("rooster/include/rooster.hrl").
+    -module(app).
+    -export([start/0, exports/0]).
 
-	-export([start/0, exports/0]).
+    start() ->
+		rooster:start(#{port => 8080}).
 
-	start() ->
-	    Options = #config{port=8080},
-	    rooster:start(Options).
+    exports() ->
+		#{routes => [route_example],
+		version => "0.0.1",
+		resp_headers => [{"access-control-allow-methods", "*"},
+						{"access-control-allow-headers", "*"},
+						{"access-control-allow-origin", "*"}]}.
 
-	exports() ->
-	    #state{routes=[route_example], %route modules
-               middleware=[middleware_example], %middleware modules
-               resp_headers=[{"access-control-allow-methods", "*"},
-                             {"access-control-allow-headers", "*"},
-                             {"access-control-allow-origin", "*"}],
-               version="0.0.1"}.
 
 This module will be responsible for starting the server. The **#state** record is used to configure the response headers and also the implemented routes and middleware that the framework should handle. With this module created just run the following command in the terminal and your server should start.
 
@@ -61,7 +58,6 @@ Simple route example.
 
 	-module(route_example).
 	-export([exports/0, get_products/2, save_product/2, get_product/2]).
-
 
 	get_products(_Req, _Resp) ->
 	    {200, #{id => 43, price => 150}}.	
@@ -86,13 +82,9 @@ Is important to note that the functions **must** have two parameters, **Req** an
 Follows an example of a middleware used to authenticate the API through basic authentication.
 
 	-module(middleware_example).
-	-include_lib("rooster/include/rooster.hrl").
 	-export([exports/0, basic_auth/2]).
 
-
-
-	basic_auth(Req, Resp) ->
-	    Auth = Req#request.authorization,
+	basic_auth(#{authorization := Auth}, Resp) ->
 	    Authorizated = rooster_basic_auth:is_authorized(Auth, {"admin", "admin"}),
 	    case Authorizated of
             true ->
@@ -114,28 +106,25 @@ The function return should be `{next|any(), any()}`. When something different fr
 ## SSL configuration
 After generate the SSL certifier for your domain, everything that need to be done is to pass some extra parameters in the application `start`  (**ssl** and **ssl_opts**). Follows an example of how the `app.erl` should looks like:
 
-	-module(app).
-	-include_lib("rooster/include/rooster.hrl").
+    -module(app).
+    -export([start/0, exports/0]).
 
-	-export([start/0, exports/0]).
 
-	start() ->
-	    Options = #config{port=8080,
-		              ssl={ssl, false},
-		              ssl_opts={ssl_opts, [
-		                                   {certfile, "src/server_cert.pem"},
-		                                   {keyfile, "src/server_key.pem"}]}
-		             },
-	    rooster:start_server(Options).
+    start() ->
+		Options = #{port => 8080,
+				ssl => {ssl, false},
+				ssl_opts => {ssl_opts, [
+								{certfile, "src/server_cert.pem"},
+								{keyfile, "src/server_key."}
+							]}},
+		rooster:start_server(Options).
 
-	exports() ->
-	    #state{routes=[route_example],
-               resp_headers=[{"access-control-allow-methods", "*"},
-                             {"access-control-allow-headers", "*"},
-                             {"access-control-allow-origin", "*"}],
-               version="0.0.1"
-              }.
-
+    exports() ->
+		#{routes => [route_example],
+		resp_headers => [{"access-control-allow-methods", "*"},
+						{"access-control-allow-headers", "*"},
+						{"access-control-allow-origin", "*"}],
+		version => "0.0.0"}.
 
 ## Hot code reloading
 
