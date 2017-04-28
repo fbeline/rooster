@@ -2,6 +2,7 @@
 /doc
 /_test
 /_build
+/.idea
 /.eunit
 /docs
 .DS_Store

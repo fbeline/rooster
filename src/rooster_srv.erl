@@ -1,16 +1,39 @@
 -module(rooster_srv).
--include_lib("rooster.hrl").
 -behaviour(gen_server).
 
--export([start/1, stop/0, init/1]).
--export([handle_call/3, handle_cast/2, terminate/2, handle_info/2, code_change/3]).
+-export([start/1, stop/0, analyze_route/2]).
+-export([init/1, handle_call/3, handle_cast/2, terminate/2, handle_info/2, code_change/3]).
 
+%% ===============
+%% Public API
+%% ===============
 start(State) ->
     gen_server:start_link(?MODULE, State, []).
 
 stop() ->
     gen_server:cast(?MODULE, stop).
 
+
+analyze_route(Pid, Req) ->
+    gen_server:call(Pid, {analyze_route, Req}).
+
+%% ===============
+%% Server API
+%% ===============
+
+%% @doc handle http request, executing relevant routes and middleware that fit on it
+%%
+handle_call({analyze_route, Req}, _From, {Routes, Middlewares, RespHeaders}) ->
+    {Status, Response} = rooster_dispatcher:match_route(Req, Routes, Middlewares),
+    Headers = [{"Content-type", "application/json"}] ++ RespHeaders,
+    make_response(Status, Response, Headers).
+
+handle_cast(stop, Env) ->
+    {stop, normal, Env}.
+
+%% ===============
+%% Server callbacks
+%% ===============
 init(Env) ->
     process_flag(trap_exit, true),
     {ok, Env}.
@@ -24,15 +47,9 @@ handle_info({'EXIT', _Pid, _Reason}, State) ->
 code_change(_OldVsn, State, _Extra) ->
     {ok, State}.
 
-handle_cast(stop, Env) ->
-    {stop, normal, Env}.
-
-%% @doc handle http request, executing relevant routes and middleware that fit on it
-%%
-handle_call({analyze_route, Req}, _From, {Routes, Middlewares, RespHeaders}) ->
-    {Status, Response} = rooster_dispatcher:match_route(Req, Routes, Middlewares),
-    Headers = [{"Content-type", "application/json"}] ++ RespHeaders,
-    make_response(Status, Response, Headers).
+%% ===============
+%% Private API
+%% ===============
 
 %% @doc build response based on status and headers
 %%

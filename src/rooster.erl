@@ -17,7 +17,7 @@ ensure_started(App) ->
 
 %% @doc start rooster server
 %%
--spec start(config()) -> 'ignore' | {'error',_} | {'ok',pid()}.
+-spec start(config()) -> 'ignore' | {'error', _} | {'ok', pid()}.
 
 start(State) ->
     ensure_started(crypto),
@@ -38,5 +38,5 @@ stop() ->
 
 analyze_request(Req, Routes, Middlewares, Cors) ->
     {ok, Pid} = rooster_srv:start({Routes, Middlewares, Cors}),
-    gen_server:call(Pid, {analyze_route, Req}).
+    rooster_srv:analyze_route(Pid, Req).
 
