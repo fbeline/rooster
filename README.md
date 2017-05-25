@@ -6,7 +6,7 @@ Simplistic REST framework that runs on top of mochiweb.
 - **Basic Authentication**: Rooster provide a basic authentication module that can be easily integrated with Middleware.
 - **CORS configuration**: You are able to easily configure CORS for your application.
 - **HTTPS Support**
-- **0% down time**: You can change your code in real time! The changes will be available in the the next request (without stopping the application).
+- **0% down time**: You can change your code in real time! The changes will be available on the next request (without stopping the application).
 
 ## Installation
 1) Download and install [rebar3](https://www.rebar3.org/)
@@ -25,7 +25,7 @@ That is it, we are ready to move forward.
 
 Create a `app` module as the following one:
 
-*Obs 1: The name for the starter module is a convention, if the `app` module doesn't exists the server will not start.*
+*Obs 1: The name for the starter module is a convention if the `app` module doesn't exist the server will not start.*
 
 *Obs 2: The `start` method is not needed as you can initialize `rooster_sup` directly from the supervisor of your application.*
 
@@ -43,7 +43,7 @@ Create a `app` module as the following one:
 				{"access-control-allow-origin", "*"}]}.
 
 
-This module will be responsible for starting the server. The **#state** record is used to configure the response headers and also the implemented routes and middleware that the framework should handle. With this module created just run the following command in the terminal and your server should start.
+This module will be responsible for starting the server. The exported map is used to configure the response headers and also the implemented routes and middleware that the framework should handle. With this module created just run the following command in the terminal and your server should start.
 
 	erl \
 	    -pa ebin _build/default/lib/*/ebin \
@@ -73,9 +73,9 @@ Simple route example.
 	    [{'GET', "products", get_products}, {'GET', "products/:id", get_product}, {'POST', "products", save_product}].
 
 
-The **exports** method is required, it will provide the list of available endpoints that this module contains. Each tuple should have the http method, the route itself and the function that will be executed. 
+The **exports** method is required, it will provide the list of available endpoints that this module contains. Each tuple should have the HTTP method, the route itself and the function that will be executed. 
 
-Is important to note that the functions **must** have two parameters, **Req** and **Resp**, the `Resp` will contains the possible result of previous middleware and the `Req` all the major information.
+Is important to note that the functions **must** have two parameters, **Req** and **Resp**, the `Resp` will contain the possible result of previous middleware and the `Req` all the major information.
 
 ## Middleware example
 
@@ -101,10 +101,10 @@ The method **exports** will return a list of tuples, the first argument is the m
 
 	{'BEFORE'|'AFTER', RegEx, Method}
 	
-The function return should be `{next|any(), any()}`. When something different from `next` is passed the rooster will not execute the following middleware/route and will return the Resp directly to the client. Otherwise the next middleware/route will be executed and the `Resp` parameter of it will be the Result of the current middleware, creating a chain of executions.
+The function return should be `{next|any(), any()}`. When something different from `next` is passed the rooster will not execute the following middleware/route and will return the Resp directly to the client. Otherwise, the next middleware/route will be executed and the `Resp` parameter of it will be the Result of the current middleware, creating a chain of executions.
 
 ## SSL configuration
-After generate the SSL certifier for your domain, everything that need to be done is to pass some extra parameters in the application `start`  (**ssl** and **ssl_opts**). Follows an example of how the `app.erl` should looks like:
+After generating the SSL certifier for your domain, everything that needs to be done is to pass some extra parameters in the application `start`  (**ssl** and **ssl_opts**). Follows an example of how the `app.erl` should look like:
 
 	-module(app).
 	-export([start/0, exports/0]).
@@ -127,20 +127,20 @@ After generate the SSL certifier for your domain, everything that need to be don
 
 ## Hot code reloading
 
-For the routes/middleware that already exists everything that need to be done is to recompile de modified modules and the changes will be available in the next request.
+For the routes/middleware that already exists everything that needs to be done is to recompile the modified modules and the changes will be available on the next request.
 
-For new modules the only difference is that they need to be exported inside the `app.erl` and the `version` must be incremented. Then just compile the `app.erl` and that is it, your new routes/middleware will be handled.
+For new modules, the only difference is that they need to be exported inside the `app.erl` and the version must be incremented. Then just compile the `app.erl` and that is it, your new routes/middleware will be handled.
 
 ## Benchmark
 
-The tests was made in a machine with 4 cores of 3.10GHz and 8gb of RAM running a Ubuntu OS version 16.04. All the tested API's was handling exactly the same request, under the minimal framework configuration.
+The tests were made on a machine with 4 cores of 3.10GHz and 8gb of RAM running a Ubuntu OS version 16.04. All the tested API's was handling exactly the same request, under the minimal framework configuration.
 The tool used to benchmark the API's was the [wrk](https://github.com/wg/wrk).
 
 
 ![benchmark](https://cloud.githubusercontent.com/assets/5730881/23285787/09a2bfb8-fa12-11e6-990e-6a7014f52122.png)
 
 
-You can find the complete information around this benchmark inside the file **benchmark.md**
+You can find the complete information around this benchmark inside the file **benchmark.txt**
 
 
 ## Dependencies
