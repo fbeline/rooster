@@ -7,7 +7,7 @@
 %% @doc API for starting the supervisor.
 %%
 start_link(State) ->
-  Conf = rooster_util:forge_config(State),
+  Conf = rooster_adapter:config(State),
   supervisor:start_link({local, ?MODULE}, ?MODULE, Conf).
 
 %% @doc Add processes if necessary.

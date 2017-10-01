@@ -15,7 +15,7 @@
             rooster_deps,
             rooster_basic_auth,
             rooster_holder,
-            rooster_util]},
+            rooster_adapter]},
         {registered, []},
         {mod, {'rooster_app', []}},
         {env, []},

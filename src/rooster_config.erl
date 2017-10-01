@@ -56,7 +56,7 @@ get_state(State = #{version := Version}, #{version := Version}) ->
   {reply, State, State};
 
 get_state(_, State) ->
-  NewState = rooster_util:forge_state(State),
+  NewState = rooster_adapter:state(State),
   Params = {maps:get(routes, NewState, []), maps:get(middleware, NewState, [])},
   {Routes, Middleware} = parse_state(Params),
   FinalState = maps:merge(NewState, #{routes => Routes, middleware => Middleware}),
