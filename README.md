@@ -6,7 +6,7 @@ Simplistic REST framework that runs on top of mochiweb.
 - **Basic Authentication**: Rooster provide a basic authentication module that can be easily integrated with Middleware.
 - **CORS configuration**: You are able to easily configure CORS for your application.
 - **HTTPS Support**
-- **0% down time**: You can change your code in real time! The changes will be available on the next request (without stopping the application).
+- **0% down time**: You can change your code in real time, the changes will be available on the next request (without stopping the application).
 
 ## Installation
 1) Download and install [rebar3](https://www.rebar3.org/)
@@ -15,7 +15,7 @@ Simplistic REST framework that runs on top of mochiweb.
 
 3) Edit the file **rebar.config** and add the following lines inside deps:
 
-	{deps, [ {rooster, ".*", {git, "git://github.com/FelipeBB/rooster.git", {branch, "master"}}} ]}.
+`{deps, [ {rooster, ".*", {git, "git://github.com/FelipeBB/rooster.git", {branch, "master"}}} ]}.`
 
 4) Run the command: rebar3 compile
 
@@ -29,49 +29,55 @@ Create a `app` module as the following one:
 
 *Obs 2: The `start` method is not needed as you can initialize `rooster_sup` directly from the supervisor of your application.*
 
-    -module(app).
-    -export([start/0, exports/0]).
+```Erlang
+-module(app).
+-export([start/0, exports/0]).
 
-    start() ->
-		rooster:start(#{port => 8080}).
+start() ->
+  rooster:start(#{port => 8080}).
 
-    exports() ->
-		#{routes => [route_example],
-		version => "0.0.1",
-		resp_headers => [{"access-control-allow-methods", "*"},
-				{"access-control-allow-headers", "*"},
-				{"access-control-allow-origin", "*"}]}.
-
+exports() ->
+#{routes       => [route_example],
+  version      => "0.0.1",
+  resp_headers => [{"access-control-allow-methods", "*"},
+		   {"access-control-allow-headers", "*"},
+                   {"access-control-allow-origin", "*"}]}.
+```
 
 This module will be responsible for starting the server. The exported map is used to configure the response headers and also the implemented routes and middleware that the framework should handle. With this module created just run the following command in the terminal and your server should start.
 
-	erl \
-	    -pa ebin _build/default/lib/*/ebin \
-	    -boot start_sasl \
-	    -s app \
-	    -s reloader
-	    
+```
+erl \
+  -pa ebin _build/default/lib/*/ebin \
+  -boot start_sasl \
+  -s app \
+  -s reloader
+```
+
 if you see something like it`rooster listening on port 8080`, then everything is fine.
 
 ## Route example
 Simple route example.
 
-	-module(route_example).
-	-export([exports/0, get_products/2, save_product/2, get_product/2]).
+```Erlang
+-module(route_example).
+-export([exports/0, get_products/2, save_product/2, get_product/2]).
 
-	get_products(_Req, _Resp) ->
-	    {200, #{id => 43, price => 150}}.	
+get_products(_Req, _Resp) ->
+  {200, #{id => 43, price => 150}}.	
 
-	get_product(#{pathParams := PathParams}, _Resp) ->
-    	Id = proplists:get_value(":id", PathParams),
-    	{200, #{id => Id, price => 8000}}.
+get_product(#{pathParams := PathParams}, _Resp) ->
+  Id = proplists:get_value(":id", PathParams),
+  {200, #{id => Id, price => 8000}}.
 
-	save_product(#{body := Body}, _Resp) ->
-	    {201, Body}.
+save_product(#{body := Body}, _Resp) ->
+  {201, Body}.
 
-	exports() ->
-	    [{'GET', "products", get_products}, {'GET', "products/:id", get_product}, {'POST', "products", save_product}].
-
+exports() ->
+  [{'GET', "products", get_products},
+   {'GET', "products/:id", get_product},
+   {'POST', "products", save_product}].
+```
 
 The **exports** method is required, it will provide the list of available endpoints that this module contains. Each tuple should have the HTTP method, the route itself and the function that will be executed. 
 
@@ -81,49 +87,49 @@ Is important to note that the functions **must** have two parameters, **Req** an
 
 Follows an example of a middleware used to authenticate the API through basic authentication.
 
-	-module(middleware_example).
-	-export([exports/0, basic_auth/2]).
+```Erlang
+-module(middleware_example).
+-export([exports/0, basic_auth/2]).
 
-	basic_auth(#{authorization := Auth}, Resp) ->
-	    Authorizated = rooster_basic_auth:is_authorized(Auth, {"admin", "admin"}),
-	    case Authorizated of
-            true ->
-                {next, Resp};
-            _ ->
-                {break, {401, {[{<<"reason">>, <<"Unauthorized">>}]}}}
-	    end. 
+basic_auth(#{authorization := Auth}, Resp) ->
+  Authorizated = rooster_basic_auth:is_authorized(Auth, {"admin", "admin"}),
+  case Authorizated of
+  true ->
+    {next, Resp};
+  _ ->
+    {break, {401, {[{<<"reason">>, <<"Unauthorized">>}]}}}
+end. 
 
-
-	exports() ->
-	    [{'BEFORE', ".*", basic_auth}].
-
+exports() ->
+  [{'BEFORE', ".*", basic_auth}].
+```
 The method **exports** will return a list of tuples, the first argument is the moment when the middleware will be executed(before or after the request), the second is the regex that will be evaluated based on the requested route, and the final one is the function that will be executed.
 
-	{'BEFORE'|'AFTER', RegEx, Method}
+`{'BEFORE'|'AFTER', RegEx, Method}`
 	
 The function return should be `{next|any(), any()}`. When something different from `next` is passed the rooster will not execute the following middleware/route and will return the Resp directly to the client. Otherwise, the next middleware/route will be executed and the `Resp` parameter of it will be the Result of the current middleware, creating a chain of executions.
 
 ## SSL configuration
 After generating the SSL certifier for your domain, everything that needs to be done is to pass some extra parameters in the application `start`  (**ssl** and **ssl_opts**). Follows an example of how the `app.erl` should look like:
 
-	-module(app).
-	-export([start/0, exports/0]).
+```Erlang
+-module(app).
+-export([start/0, exports/0]).
 
-	start() ->
-		Options = #{port => 8080,
-		ssl => {ssl, false},
-		ssl_opts => {ssl_opts, [
-					{certfile, "src/server_cert.pem"},
-					{keyfile, "src/server_key."}
-				]}},
-		rooster:start_server(Options).
+start() ->
+  Options = #{port => 8080,
+  ssl => {ssl, false},
+  ssl_opts => {ssl_opts, [{certfile, "src/server_cert.pem"},
+                          {keyfile, "src/server_key."}]}},
+  rooster:start_server(Options).
 
-	exports() ->
-		#{routes => [route_example],
-		resp_headers => [{"access-control-allow-methods", "*"},
-				{"access-control-allow-headers", "*"},
-				{"access-control-allow-origin", "*"}],
-		version => "0.0.0"}.
+exports() ->
+  #{routes => [route_example],
+  resp_headers => [{"access-control-allow-methods", "*"},
+                   {"access-control-allow-headers", "*"},
+                   {"access-control-allow-origin", "*"}],
+  version => "0.0.0"}.
+```
 
 ## Hot code reloading
 
