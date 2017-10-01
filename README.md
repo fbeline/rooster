@@ -37,11 +37,11 @@ start() ->
   rooster:start(#{port => 8080}).
 
 exports() ->
-#{routes       => [route_example],
-  version      => "0.0.1",
-  resp_headers => [{"access-control-allow-methods", "*"},
-		   {"access-control-allow-headers", "*"},
-                   {"access-control-allow-origin", "*"}]}.
+  #{routes       => [route_example],
+    version      => "0.0.1",
+    resp_headers => [{"access-control-allow-methods", "*"},
+		     {"access-control-allow-headers", "*"},
+                     {"access-control-allow-origin", "*"}]}.
 ```
 
 This module will be responsible for starting the server. The exported map is used to configure the response headers and also the implemented routes and middleware that the framework should handle. With this module created just run the following command in the terminal and your server should start.
