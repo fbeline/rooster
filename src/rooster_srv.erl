@@ -8,14 +8,14 @@
 %% Public API
 %% ===============
 start(State) ->
-    gen_server:start_link(?MODULE, State, []).
+  gen_server:start_link(?MODULE, State, []).
 
 stop() ->
-    gen_server:cast(?MODULE, stop).
+  gen_server:cast(?MODULE, stop).
 
 
 analyze_route(Pid, Req) ->
-    gen_server:call(Pid, {analyze_route, Req}).
+  gen_server:call(Pid, {analyze_route, Req}).
 
 %% ===============
 %% Server API
@@ -24,28 +24,28 @@ analyze_route(Pid, Req) ->
 %% @doc handle http request, executing relevant routes and middleware that fit on it
 %%
 handle_call({analyze_route, Req}, _From, {Routes, Middlewares, RespHeaders}) ->
-    {Status, Response} = rooster_dispatcher:match_route(Req, Routes, Middlewares),
-    Headers = [{"Content-type", "application/json"}] ++ RespHeaders,
-    make_response(Status, Response, Headers).
+  {Status, Response} = rooster_dispatcher:match_route(Req, Routes, Middlewares),
+  Headers = [{"Content-type", "application/json"}] ++ RespHeaders,
+  make_response(Status, Response, Headers).
 
 handle_cast(stop, Env) ->
-    {stop, normal, Env}.
+  {stop, normal, Env}.
 
 %% ===============
 %% Server callbacks
 %% ===============
 init(Env) ->
-    process_flag(trap_exit, true),
-    {ok, Env}.
+  process_flag(trap_exit, true),
+  {ok, Env}.
 
 terminate(_Reason, _Env) ->
-    ok.
+  ok.
 
 handle_info({'EXIT', _Pid, _Reason}, State) ->
-    {noreply, State}.
+  {noreply, State}.
 
 code_change(_OldVsn, State, _Extra) ->
-    {ok, State}.
+  {ok, State}.
 
 %% ===============
 %% Private API
@@ -56,8 +56,8 @@ code_change(_OldVsn, State, _Extra) ->
 -spec make_response(integer(), any(), list()) -> {atom(), atom(), tuple(), list()}.
 
 make_response(404, _, Headers) ->
-    Msg = rooster_json:encode(#{message => <<"Requested endpoint not found.">>}),
-    {stop, normal, {404, Headers, Msg}, []};
+  Msg = rooster_json:encode(#{message => <<"Requested endpoint not found.">>}),
+  {stop, normal, {404, Headers, Msg}, []};
 
 make_response(Status, Response, Headers) ->
-    {stop, normal, {Status, Headers, rooster_json:encode(Response)}, []}.
+  {stop, normal, {Status, Headers, rooster_json:encode(Response)}, []}.

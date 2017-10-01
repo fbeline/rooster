@@ -7,15 +7,15 @@
 -spec encode(any()) -> string().
 
 encode(Term) ->
-    jsx:encode(Term).
+  jsx:encode(Term).
 
 %% @doc json to erlang
 %%
 -spec decode(string()) -> any().
 
 decode(Term) ->
-    Data = case Term of
-               undefined -> erlang:list_to_binary("{}");
-               Bin -> Bin
-           end,
-    jsx:decode(Data).
+  Data = case Term of
+           undefined -> erlang:list_to_binary("{}");
+           Bin -> Bin
+         end,
+  jsx:decode(Data).
