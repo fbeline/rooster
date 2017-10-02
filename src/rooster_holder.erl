@@ -27,5 +27,5 @@ code_change(_OldVsn, State, _Extra) ->
 handle_cast(stop, Env) ->
   {stop, normal, Env}.
 
-handle_call(get_state, _From, State) ->
+handle_call(get_new_state, _From, State) ->
   {reply, State, State}.

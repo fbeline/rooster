@@ -7,7 +7,7 @@
 start(Options) ->
   {DocRoot, Options1} = get_option(docroot, Options),
   Loop = fun(Req) ->
-           #{routes := R, middleware := M, resp_headers := Rh} = gen_server:call(rooster_config, get_state),
+           #{routes := R, middleware := M, resp_headers := Rh} = gen_server:call(rooster_config, get_new_state),
            ?MODULE:loop(Req, DocRoot, R, M, Rh)
          end,
   mochiweb_http:start([{name, ?MODULE}, {loop, Loop} | Options1]).

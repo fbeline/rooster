@@ -1,4 +1,4 @@
--module(rooster_config).
+-module(rooster_state).
 
 -behaviour(gen_server).
 -include_lib("rooster.hrl").
@@ -23,11 +23,15 @@ handle_cast(stop, Env) ->
   {stop, normal, Env};
 
 handle_cast({set_state, State}, _State) ->
-  {noreply, State}.
+  {noreply, rooster_adapter:state(State)}.
 
 handle_call(get_state, _From, State) ->
+  {reply, State, State};
+
+handle_call(get_new_state, _From, State) ->
   NewState = app:exports(),
   get_state(State, NewState).
+
 
 %% ===============
 %% Server callbacks
@@ -57,34 +61,4 @@ get_state(State = #{version := Version}, #{version := Version}) ->
 
 get_state(_, State) ->
   NewState = rooster_adapter:state(State),
-  Params = {maps:get(routes, NewState, []), maps:get(middleware, NewState, [])},
-  {Routes, Middleware} = parse_state(Params),
-  FinalState = maps:merge(NewState, #{routes => Routes, middleware => Middleware}),
-  {reply, FinalState, FinalState}.
-
-%% @doc configure final routes/middleware state
-%%
--spec parse_state({list(), list()}) -> {list(route()), list(middleware())}.
-
-parse_state({Routes, Middleware}) ->
-  NewRoutes = add_module(Routes, []),
-  NewMiddleware = add_module(Middleware, []),
-  {NewRoutes, NewMiddleware}.
-
-%% @doc add module to all routes and middleware
-%%
--spec add_module(list(), list()) -> list(route()).
-
-add_module([], Acc) -> Acc;
-add_module([M | T], Acc) ->
-  NewAcc = Acc ++ apply_module(apply(M, exports, []), M, []),
-  add_module(T, NewAcc).
-
-%% @doc add module to routes tuples
-%%
--spec apply_module(list(route()), module(), list()) -> list(route()).
-
-apply_module([], _, Acc) -> Acc;
-apply_module([H | T], Module, Acc) ->
-  NewEntry = erlang:insert_element(1, H, Module),
-  apply_module(T, Module, [NewEntry | Acc]).
+  {reply, NewState, NewState}.

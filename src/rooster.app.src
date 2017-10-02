@@ -7,7 +7,7 @@
               rooster_app,
               rooster_json,
               rooster_srv,
-              rooster_config,
+              rooster_state,
               rooster_middleware,
               rooster_dispatcher,
               rooster_sup,
