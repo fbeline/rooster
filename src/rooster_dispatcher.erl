@@ -1,51 +1,37 @@
 -module(rooster_dispatcher).
 -include_lib("rooster.hrl").
 
--export([match_route/3, compare_route_tokens/3, parse_route/1, call_route_function/4]).
+-export([match_route/2, compare_route_tokens/3, parse_route/1, call_route_function/3]).
 
 
 %% @doc get matched route
 %%
--spec match_route(request(), list(route()), list(middleware())) -> response().
+-spec match_route(request(), list(route())) -> response().
 
-match_route(#{path := Path, method := Method} = Req, Routes, Middleware) ->
-  match_route(Path, Method, Req, Routes, Middleware).
+match_route(#{path := Path, method := Method} = Req, Routes) ->
+  match_route(Path, Method, Req, Routes).
 
-
-match_route(_, _, _Req, [], _) -> {404, []};
-match_route(RequestedRoute, Method, Req, [{Module, Method, Route, Function} | T], Middlewares) ->
+match_route(_, _, _Req, []) -> {404, []};
+match_route(RequestedRoute, Method, Req, [{Method, Route, Function} | T]) ->
   RouteTokens = parse_route(Route),
   RequestedRouteTokens = parse_route(RequestedRoute),
   {IsValid, PathParams} = compare_route_tokens(RouteTokens, RequestedRouteTokens, []),
   if IsValid =:= true ->
     error_logger:info_msg("Route matched: " ++ lists:concat([Method, ":", RequestedRoute]), []),
-    call_route_function(Req, {Module, Function}, PathParams, Middlewares);
+    call_route_function(Req, Function, PathParams);
     true ->
-      match_route(RequestedRoute, Method, Req, T, Middlewares)
+      match_route(RequestedRoute, Method, Req, T)
   end;
 
-match_route(Route, M1, Req, [_ | T], Middlewares) -> match_route(Route, M1, Req, T, Middlewares).
+match_route(Route, M1, Req, [_ | T]) -> match_route(Route, M1, Req, T).
 
 %% @doc Call route function
 %%
--spec call_route_function(request(), {module(), function()}, list(), list(middleware())) -> response().
+-spec call_route_function(request(), {module(), function()}, list()) -> response().
 
-call_route_function(Req, {Module, Function}, PathParams, Middlewares) ->
+call_route_function(Req, Function, PathParams) ->
   NewRequest = create_request(Req, PathParams),
-  {Instruction, Resp} = rooster_middleware:match('BEFORE', NewRequest, Middlewares, undefined),
-  execute_next(Instruction, NewRequest, {Module, Function, Middlewares}, Resp).
-
-%% @doc execute next el in the application cycle
-%%
--spec execute_next(atom(), request(), {module(), function(), list(middleware())}, any()) -> any().
-
-execute_next(next, Req, {Module, Function, Middlewares}, Resp) ->
-  RouteResp = apply(Module, Function, [Req, Resp]),
-  {_, AfterResponse} = rooster_middleware:match('AFTER', Req, Middlewares, RouteResp),
-  AfterResponse;
-
-execute_next(_, _, _, Resp) ->
-  Resp.
+  apply(Function, [NewRequest, #{}]).
 
 %% @doc create request with path params
 %%

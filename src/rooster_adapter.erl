@@ -22,7 +22,6 @@ config(Conf) ->
 
 state(State) ->
   Default = #{routes       => [],
-              middleware   => [],
               resp_headers => [],
               version      => "0.0.0"},
   maps:merge(Default, State).

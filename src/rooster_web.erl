@@ -1,23 +1,23 @@
 -module(rooster_web).
 
--export([start/1, stop/0, loop/5]).
+-export([start/1, stop/0, loop/4]).
 
 %% @doc initializer function responsible for start mochiweb server
 %%
 start(Options) ->
   {DocRoot, Options1} = get_option(docroot, Options),
   Loop = fun(Req) ->
-           #{routes := R, middleware := M, resp_headers := Rh} = gen_server:call(rooster_config, get_new_state),
-           ?MODULE:loop(Req, DocRoot, R, M, Rh)
+           #{routes := R, resp_headers := Rh} = gen_server:call(rooster_config, get_new_state),
+           ?MODULE:loop(Req, DocRoot, R, Rh)
          end,
   mochiweb_http:start([{name, ?MODULE}, {loop, Loop} | Options1]).
 
 
 %% @doc loop is executed once per request
 %%
-loop(Req, _DocRoot, Routes, Middleware, RespHeaders) ->
+loop(Req, _DocRoot, Routes, RespHeaders) ->
   try
-    Response = rooster:analyze_request(create_request(Req), Routes, Middleware, RespHeaders),
+    Response = rooster:analyze_request(create_request(Req), Routes, RespHeaders),
     Req:respond(Response)
   catch
     Type:What ->

@@ -2,7 +2,7 @@
 -include_lib("../include/rooster.hrl").
 -include_lib("eunit/include/eunit.hrl").
 
--export([route_function/2, route_function_pparam/2]).
+-export([route_function/2]).
 
 compare_route_tokens_simple_test() ->
   RequestedRoute = ["products", "save"],
@@ -40,11 +40,13 @@ parse_route_path_params_test() ->
 
 call_route_function_pparam_test() ->
   Params = [{param1, 10}, {param2, 20}],
-  Resp = rooster_dispatcher:call_route_function(#{pathParams => []}, {?MODULE, route_function_pparam}, Params, []),
+  Resp = rooster_dispatcher:call_route_function(#{pathParams => []}, route_function_pparam(), Params),
   ?assertEqual(Params, Resp).
 
 route_function(#{body := Body}, _Resp) ->
   Body.
 
-route_function_pparam(#{pathParams := PathParams}, _Resp) ->
-  PathParams.
+route_function_pparam() ->
+  fun(#{pathParams := PathParams}, _Resp) ->
+    PathParams
+  end.

@@ -19,8 +19,7 @@ simple_test() ->
   gen_server:cast(Srv, {set_state, state()}),
   State = gen_server:call(Srv, get_state),
   erlang:display(State),
-  ?assertEqual(#{middleware   => [],
-                 resp_headers => [],
+  ?assertEqual(#{resp_headers => [],
                  routes       => [state_test],
                  version      => "0.0.0"},
                State).

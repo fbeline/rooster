@@ -16,7 +16,6 @@ config_adapter_test() ->
 
 state_adapter_test() ->
   Expected = #{routes       => [],
-               middleware   => [],
                resp_headers => [],
                version      => "0.0.0"},
   ?assertEqual(Expected, rooster_adapter:state(#{})).

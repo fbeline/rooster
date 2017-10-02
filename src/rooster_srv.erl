@@ -23,8 +23,8 @@ analyze_route(Pid, Req) ->
 
 %% @doc handle http request, executing relevant routes and middleware that fit on it
 %%
-handle_call({analyze_route, Req}, _From, {Routes, Middlewares, RespHeaders}) ->
-  {Status, Response} = rooster_dispatcher:match_route(Req, Routes, Middlewares),
+handle_call({analyze_route, Req}, _From, {Routes, RespHeaders}) ->
+  {Status, Response} = rooster_dispatcher:match_route(Req, Routes),
   Headers = [{"Content-type", "application/json"}] ++ RespHeaders,
   make_response(Status, Response, Headers).
 
