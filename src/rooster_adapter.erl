@@ -1,7 +1,7 @@
 -module(rooster_adapter).
 -include_lib("rooster.hrl").
 
--export([config/1, state/1]).
+-export([config/1, state/1, middleware/1]).
 
 %% @doc create default behaviour of config
 %%
@@ -25,3 +25,9 @@ state(State) ->
               resp_headers => [],
               version      => "0.0.0"},
   maps:merge(Default, State).
+
+middleware(Middleware) ->
+  Default = #{name  => default,
+              enter => fun(Req, Resp) -> {Req, Resp} end,
+              leave => fun(Req, Resp) -> {Req, Resp} end},
+  maps:merge(Default, Middleware).

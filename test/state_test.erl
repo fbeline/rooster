@@ -18,8 +18,8 @@ simple_test() ->
   {ok, Srv} = rooster_state:start(),
   gen_server:cast(Srv, {set_state, state()}),
   State = gen_server:call(Srv, get_state),
-  erlang:display(State),
   ?assertEqual(#{resp_headers => [],
                  routes       => [state_test],
                  version      => "0.0.0"},
                State).
+

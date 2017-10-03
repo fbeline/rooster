@@ -19,3 +19,9 @@ state_adapter_test() ->
                resp_headers => [],
                version      => "0.0.0"},
   ?assertEqual(Expected, rooster_adapter:state(#{})).
+
+middleware_test() ->
+  Result = rooster_adapter:middleware(#{name => m_test}),
+  ?assertEqual(m_test, maps:get(name, Result)),
+  ?assert(is_function(maps:get(enter, Result))),
+  ?assert(is_function(maps:get(leave, Result))).
