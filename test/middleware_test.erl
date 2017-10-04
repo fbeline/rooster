@@ -3,30 +3,20 @@
 -include_lib("../include/rooster.hrl").
 -include_lib("eunit/include/eunit.hrl").
 
--export([some_route_before/2, some_route_after/2]).
 
-match_before_test() ->
-  Middlewares = exports(),
-  Req = #{path => "lena/soderberg"},
-  {_, Resp} = rooster_middleware:match('BEFORE', Req, Middlewares, undefined),
-  ?assertEqual("hi", Resp).
+middleware() ->
+  [#{name => foo, leave => fun(_, Resp) -> {null, Resp * 2} end},
+   #{name => bar, enter => fun(Req, _) -> {Req * 3, null} end}].
 
-match_after_test() ->
-  Middlewares = exports(),
-  Req = #{path => "lena/soderberg"},
-  {_, Resp} = rooster_middleware:match('AFTER', Req, Middlewares, "hi,"),
-  ?assertEqual("hi, my dear", Resp).
+server_start_test() ->
+  {ok, Pid} = rooster_middleware:start_link(middleware()),
+  State = gen_server:call(Pid, get_state),
+  ?assertEqual(State, middleware()).
 
-no_middleware_test() ->
-  {next, Resp} = rooster_middleware:match('BEFORE', #{}, [], undefined),
-  ?assertEqual(undefined, Resp).
+leave_test() ->
+  {_, Resp} = rooster_middleware:leave({1, null}, [foo]),
+  ?assertEqual(Resp, 2).
 
-some_route_before(_Req, _Resp) ->
-  {next, "hi"}.
-
-some_route_after(_Req, Resp) ->
-  {next, Resp ++ " my dear"}.
-
-exports() ->
-  [{?MODULE, 'BEFORE', ".*", some_route_before},
-    {?MODULE, 'AFTER', ".*", some_route_after}].
+enter_test() ->
+  {Req, _} = rooster_middleware:enter({1, null}, [bar]),
+  ?assertEqual(Req, 3).

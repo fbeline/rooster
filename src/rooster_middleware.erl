@@ -1,37 +1,55 @@
 -module(rooster_middleware).
--include_lib("rooster.hrl").
 
--export([match/4]).
+-behaviour(gen_server).
 
-%% @doc filter matched middlewares and execute it
-%%
--spec match(atom(), request(), [middleware()], any()) -> any().
+%% API
+-export([start_link/1]).
 
-match(_, _, [], Resp) -> {next, Resp};
-match(Type, #{path := Path} = Req, Middleware = [{_, Type, Regex, _} | _], Resp) ->
-  Match = re:run(Path, Regex),
-  middleware_regex_match(Match, Req, Middleware, Resp);
+%% gen_server callbacks
+-export([init/1, handle_call/3, handle_cast/2,
+         handle_info/2, terminate/2, code_change/3,
+         enter/2, leave/2]).
 
-match(Type, Req, [_ | T], Resp) ->
-  match(Type, Req, T, Resp).
+-define(SERVER, ?MODULE).
 
-%% @doc execute middleware if regex matches
-%%
--spec middleware_regex_match(atom(), request(), [middleware()], any()) -> any().
+-record(state, {}).
 
-middleware_regex_match(nomatch, Req, [{_, Type, _, _} | T], Resp) ->
-  match(Type, Req, T, Resp);
+%%%===================================================================
+%%% API
+%%%===================================================================
 
-middleware_regex_match(_, Req, [{Module, Type, _, Function} | T], Resp) ->
-  {Instruction, NewResp} = apply(Module, Function, [Req, Resp]),
-  execute_next(Instruction, {Type, Req, T}, NewResp).
+start_link(State) ->
+  gen_server:start_link({local, ?SERVER}, ?MODULE, State, []).
 
-%% @doc execute next middleware or end the cycle
-%%
--spec execute_next(atom(), {atom(), request(), [middleware()]}, any()) -> any().
+enter(fn, [H|T]) ->
+  foo.
 
-execute_next(next, {Type, Req, Tail}, Resp) ->
-  match(Type, Req, Tail, Resp);
+leave(fn, [H|T]) ->
+  foo.
 
-execute_next(_, _, Resp) ->
-  {break, Resp}.
+%%%===================================================================
+%%% gen_server callbacks
+%%%===================================================================
+
+init(Env) ->
+  {ok, Env}.
+
+handle_call(get_state, _From, State) ->
+  {reply, State, State}.
+
+handle_cast(_Request, State) ->
+  {noreply, State}.
+
+handle_info(_Info, State) ->
+  {noreply, State}.
+
+terminate(_Reason, _State) ->
+  ok.
+
+code_change(_OldVsn, State, _Extra) ->
+  {ok, State}.
+
+%%%===================================================================
+%%% Internal functions
+%%%===================================================================
+
