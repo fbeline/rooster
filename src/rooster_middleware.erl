@@ -10,29 +10,30 @@
          handle_info/2, terminate/2, code_change/3,
          enter/2, leave/2]).
 
--define(SERVER, ?MODULE).
-
--record(state, {}).
-
 %%%===================================================================
 %%% API
 %%%===================================================================
 
 start_link(State) ->
-  gen_server:start_link({local, ?SERVER}, ?MODULE, State, []).
+  gen_server:start_link({local, ?MODULE}, ?MODULE, State, []).
 
-enter(fn, [H|T]) ->
-  foo.
+enter(ReqResp, Names) ->
+  State = gen_server:call(?MODULE, get_state),
+  Middleware = match_middleware(Names, State),
+  middleware_reduce(ReqResp, Middleware, enter).
 
-leave(fn, [H|T]) ->
-  foo.
+leave(ReqResp, Names) ->
+  State = gen_server:call(?MODULE, get_state),
+  Middleware = match_middleware(Names, State),
+  middleware_reduce(ReqResp, Middleware, leave).
 
 %%%===================================================================
 %%% gen_server callbacks
 %%%===================================================================
 
 init(Env) ->
-  {ok, Env}.
+  InternalState = lists:map(fun rooster_adapter:middleware/1, Env),
+  {ok, InternalState}.
 
 handle_call(get_state, _From, State) ->
   {reply, State, State}.
@@ -52,4 +53,23 @@ code_change(_OldVsn, State, _Extra) ->
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
+
+match_middleware(Names, Middleware) -> match_middleware(Names, Middleware, []).
+match_middleware(_, [], Acc) -> Acc;
+match_middleware(Names, [Middleware | T], Acc) ->
+  Match = lists:filter(fun(Name) -> Name =:= maps:get(name, Middleware) end, Names),
+  if Match =/= [] ->
+    match_middleware(Names, T, Acc ++ [Middleware]);
+  true ->
+    match_middleware(Names, T, Acc)
+  end.
+
+middleware_reduce(ReqResp, [], _) -> ReqResp;
+middleware_reduce(ReqResp, [#{enter := Fn} | T], enter) ->
+  Result = Fn(ReqResp),
+  middleware_reduce(Result, T, enter);
+middleware_reduce(ReqResp, [#{leave := Fn} | T], leave) ->
+  Result = Fn(ReqResp),
+  middleware_reduce(Result, T, leave).
+
 

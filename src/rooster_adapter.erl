@@ -28,6 +28,6 @@ state(State) ->
 
 middleware(Middleware) ->
   Default = #{name  => default,
-              enter => fun(Req, Resp) -> {Req, Resp} end,
-              leave => fun(Req, Resp) -> {Req, Resp} end},
+              enter => fun(ReqResp) -> ReqResp end,
+              leave => fun(ReqResp) -> ReqResp end},
   maps:merge(Default, Middleware).
