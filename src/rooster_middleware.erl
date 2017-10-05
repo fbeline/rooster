@@ -17,15 +17,9 @@
 start_link(State) ->
   gen_server:start_link({local, ?MODULE}, ?MODULE, State, []).
 
-enter(ReqResp, Names) ->
-  State = gen_server:call(?MODULE, get_state),
-  Middleware = match_middleware(Names, State),
-  middleware_reduce(ReqResp, Middleware, enter).
+enter(ReqResp, Names) -> dispatch(ReqResp, Names, enter).
 
-leave(ReqResp, Names) ->
-  State = gen_server:call(?MODULE, get_state),
-  Middleware = match_middleware(Names, State),
-  middleware_reduce(ReqResp, Middleware, leave).
+leave(ReqResp, Names) -> dispatch(ReqResp, Names, leave).
 
 %%%===================================================================
 %%% gen_server callbacks
@@ -54,22 +48,24 @@ code_change(_OldVsn, State, _Extra) ->
 %%% Internal functions
 %%%===================================================================
 
+dispatch(ReqResp, Names, Action) ->
+  State = gen_server:call(?MODULE, get_state),
+  Middleware = match_middleware(Names, State),
+  middleware_reduce(ReqResp, Middleware, Action).
+
 match_middleware(Names, Middleware) -> match_middleware(Names, Middleware, []).
 match_middleware(_, [], Acc) -> Acc;
 match_middleware(Names, [Middleware | T], Acc) ->
   Match = lists:filter(fun(Name) -> Name =:= maps:get(name, Middleware) end, Names),
-  if Match =/= [] ->
-    match_middleware(Names, T, Acc ++ [Middleware]);
-  true ->
-    match_middleware(Names, T, Acc)
-  end.
+  add_middleware(Match, {Names, T, Middleware, Acc}).
+
+add_middleware([], {Names, T, _, Acc}) ->
+  match_middleware(Names, T, Acc);
+add_middleware(_, {Names, T, Middleware, Acc}) ->
+  match_middleware(Names, T, [Middleware] ++ Acc).
 
 middleware_reduce(ReqResp, [], _) -> ReqResp;
-middleware_reduce(ReqResp, [#{enter := Fn} | T], enter) ->
-  Result = Fn(ReqResp),
-  middleware_reduce(Result, T, enter);
-middleware_reduce(ReqResp, [#{leave := Fn} | T], leave) ->
-  Result = Fn(ReqResp),
-  middleware_reduce(Result, T, leave).
-
+middleware_reduce(ReqResp, [Middleware | T], Action) ->
+  Fun = maps:get(Action, Middleware),
+  middleware_reduce(Fun(ReqResp), T, Action).
 
