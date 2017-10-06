@@ -1,5 +1,5 @@
--type state() :: #{routes       => list(atom()),
-                   middleware   => list(atom()),
+-type state() :: #{routes       => list(route()),
+                   middleware   => list(map()),
                    resp_headers => list({string(), string()}),
                    version      => string()}.
 

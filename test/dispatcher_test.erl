@@ -10,13 +10,11 @@ compare_route_tokens_simple_test() ->
   ?assertEqual({true, []},
     rooster_dispatcher:compare_route_tokens(Route, RequestedRoute, [])).
 
-
 compare_route_tokens_path_param_test() ->
   RequestedRoute = ["products", "10", "load"],
   Route = ["products", ":id", "load"],
   ?assertEqual({true, [{":id", "10"}]},
     rooster_dispatcher:compare_route_tokens(Route, RequestedRoute, [])).
-
 
 compare_route_tokens_fail1_test() ->
   RequestedRoute = ["products", "10"],
@@ -38,15 +36,5 @@ parse_route_path_params_test() ->
   Tokens = rooster_dispatcher:parse_route("products/10/save/1"),
   ?assertEqual(["products", "10", "save", "1"], Tokens).
 
-call_route_function_pparam_test() ->
-  Params = [{param1, 10}, {param2, 20}],
-  Resp = rooster_dispatcher:call_route_function(#{pathParams => []}, route_function_pparam(), Params),
-  ?assertEqual(Params, Resp).
-
 route_function(#{body := Body}, _Resp) ->
   Body.
-
-route_function_pparam() ->
-  fun(#{pathParams := PathParams}, _Resp) ->
-    PathParams
-  end.

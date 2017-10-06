@@ -6,9 +6,9 @@
 
 %% @doc API for starting the supervisor.
 %%
-start_link(State) ->
-  Conf = rooster_adapter:config(State),
-  supervisor:start_link({local, ?MODULE}, ?MODULE, Conf).
+start_link([SrvConf, State]) ->
+  ISrvConf = rooster_adapter:config(SrvConf),
+  supervisor:start_link({local, ?MODULE}, ?MODULE, [ISrvConf, State]).
 
 %% @doc Add processes if necessary.
 %%
@@ -30,12 +30,13 @@ upgrade() ->
 
 %% @doc supervisor callback.
 %%
-init(#{port := Port} = Conf) ->
+init([#{port := Port} = Conf, State]) ->
   Web = web_specs(rooster_web, Conf),
-  RoosterConfig = rooster_config_specs(),
+  State = state_specs(State),
+  Middleware = middleware_specs(State),
   rooster_deps:ensure(),
   io:format("~nrooster listening on port ~p~n", [Port]),
-  {ok, {{one_for_one, 10, 10}, [RoosterConfig, Web]}}.
+  {ok, {{one_for_one, 10, 10}, [Middleware, State, Web]}}.
 
 %% @doc generate mochiweb specs to be used by supervisor
 %%
@@ -46,9 +47,16 @@ web_specs(Mod, #{ip := Ip, port := Port, static_path := Sp, ssl := Ssl, ssl_opts
     Ssl, Ssl_opts],
   {Mod, {Mod, start, [WebConfig]}, permanent, 5000, worker, dynamic}.
 
-%% @doc generate rooster_config specs to be used by supervisor
+%% @doc generate rooster_state specs to be used by supervisor
 %%
-rooster_config_specs() ->
-  {rooster_config,
-    {rooster_config, start, []},
+state_specs(State) ->
+  {rooster_state,
+    {rooster_state, start_link, State},
+    permanent, 5000, worker, []}.
+
+%% @doc generate rooster_specs specs to be used by supervisor
+%%
+middleware_specs(#{middleware := Middleware}) ->
+  {rooster_middleware,
+    {rooster_middleware, start_link, Middleware},
     permanent, 5000, worker, []}.

@@ -7,8 +7,8 @@
 start(Options) ->
   {DocRoot, Options1} = get_option(docroot, Options),
   Loop = fun(Req) ->
-           #{routes := R, resp_headers := Rh} = gen_server:call(rooster_config, get_new_state),
-           ?MODULE:loop(Req, DocRoot, R, Rh)
+           #{routes := Routes, resp_headers := Rh} = gen_server:call(rooster_config, get_state),
+           ?MODULE:loop(Req, DocRoot, Routes, Rh)
          end,
   mochiweb_http:start([{name, ?MODULE}, {loop, Loop} | Options1]).
 
@@ -42,7 +42,7 @@ create_request(Req) ->
 %% @doc request fail return
 %%
 request_fail_msg() ->
-  rooster_json:encode(#{message => <<"request failed, sorry">>}).
+  rooster_json:encode(#{message => <<"Internal server error">>}).
 
 %% @doc log stack trace if exception occurs
 %%
