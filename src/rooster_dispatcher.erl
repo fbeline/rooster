@@ -28,9 +28,8 @@ match_route(Route, M1, Req, [_ | T]) -> match_route(Route, M1, Req, T).
 -spec handle_request(request(), function(), list(atom())) -> response().
 
 handle_request(Request, Fn, Middleware) ->
-  {Req, Resp} = rooster_middleware:enter({Request, #{}}, Middleware),
-  Response = apply(Fn, [Req, Resp]),
-  rooster_middleware:leave(Response, Middleware).
+  Req = rooster_middleware:enter(Request, Middleware),
+  rooster_middleware:leave(Fn(Req), Middleware).
 
 %% @doc Parse a route in tokens
 %%
