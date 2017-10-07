@@ -30,13 +30,12 @@ upgrade() ->
 
 %% @doc supervisor callback.
 %%
-init([#{port := Port} = Conf, State]) ->
-  Web = web_specs(rooster_web, Conf),
-  State = state_specs(State),
-  Middleware = middleware_specs(State),
+init([Conf, State]) ->
+  WebSpecs = web_specs(rooster_web, Conf),
+  MiddlewareSpecs = middleware_specs(State),
+  StateSpecs = state_specs(State),
   rooster_deps:ensure(),
-  io:format("~nrooster listening on port ~p~n", [Port]),
-  {ok, {{one_for_one, 10, 10}, [Middleware, State, Web]}}.
+  {ok, {{one_for_one, 10, 10}, [MiddlewareSpecs, StateSpecs, WebSpecs]}}.
 
 %% @doc generate mochiweb specs to be used by supervisor
 %%
@@ -50,13 +49,19 @@ web_specs(Mod, #{ip := Ip, port := Port, static_path := Sp, ssl := Ssl, ssl_opts
 %% @doc generate rooster_state specs to be used by supervisor
 %%
 state_specs(State) ->
-  {rooster_state,
-    {rooster_state, start_link, State},
-    permanent, 5000, worker, []}.
+  #{id       => rooster_state,
+    start    => {rooster_state, start_link, [State]},
+    restart  => permanent,
+    shutdown => brutal_kill,
+    type     => worker,
+    modules  => []}.
 
-%% @doc generate rooster_specs specs to be used by supervisor
+%% @doc generate rooster_middleware specs to be used by supervisor
 %%
 middleware_specs(#{middleware := Middleware}) ->
-  {rooster_middleware,
-    {rooster_middleware, start_link, Middleware},
-    permanent, 5000, worker, []}.
+  #{id       => rooster_middleware,
+    start    => {rooster_middleware, start_link, [Middleware]},
+    restart  => permanent,
+    shutdown => brutal_kill,
+    type     => worker,
+    modules  => []}.

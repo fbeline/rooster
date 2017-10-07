@@ -25,7 +25,10 @@ state(State) ->
               middleware   => [],
               resp_headers => [],
               version      => "0.0.0"},
-  maps:merge(Default, State).
+  maps:merge(Default, flatt_routes(State)).
+
+flatt_routes(#{routes := Routes} = State)->
+  State#{routes := lists:flatten(Routes)}.
 
 middleware(Middleware) ->
   Default = #{name  => default,

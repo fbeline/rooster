@@ -18,6 +18,6 @@
                     ssl         => any(),
                     ssl_opts    => any()}.
 
--type route() :: {module(), atom(), string(), any()}.
--type middleware() :: {module(), atom(), string(), any()}.
+-type route() :: {atom(), string(), any(), list(map())}.
+-type middleware() :: map().
 -type response() :: {integer(), any()}.
