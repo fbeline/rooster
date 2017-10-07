@@ -5,9 +5,9 @@
 
 
 middleware() ->
-  [#{name => foo, leave => fun({_, Resp}) -> {null, Resp * 2} end},
-   #{name => bar, enter => fun({Req, _}) -> {Req * 3, null} end},
-   #{name => baz, enter => fun({Req, Resp}) -> {Req * 2, Resp} end, leave => fun({Req, Resp}) -> {Req, Resp * 2} end}].
+  [#{name => foo, leave => fun(Resp) -> Resp * 2 end},
+   #{name => bar, enter => fun(Req) -> Req * 3 end},
+   #{name => baz, enter => fun(Req) -> Req * 2 end, leave => fun(Resp) -> Resp * 2 end}].
 
 server_start_test() ->
   Middleware = middleware(),
@@ -18,20 +18,20 @@ server_start_test() ->
 
 leave_test() ->
   rooster_middleware:start_link(middleware()),
-  {_, Resp} = rooster_middleware:leave({null, 1}, [foo]),
+  Resp = rooster_middleware:leave(1, [foo]),
   ?assertEqual(2, Resp).
 
 enter_test() ->
   rooster_middleware:start_link(middleware()),
-  {Req, _} = rooster_middleware:enter({1, null}, [bar]),
+  Req = rooster_middleware:enter(1, [bar]),
   ?assertEqual(3, Req).
 
 multiple_middleware_enter_test() ->
   rooster_middleware:start_link(middleware()),
-  {Req, _} = rooster_middleware:enter({1, null}, [baz, bar]),
+  Req = rooster_middleware:enter(1, [baz, bar]),
   ?assertEqual(6, Req).
 
 multiple_middleware_leave_test() ->
   rooster_middleware:start_link(middleware()),
-  {_, Resp} = rooster_middleware:leave({null, 1}, [baz, foo]),
+  Resp = rooster_middleware:leave(1, [baz, foo]),
   ?assertEqual(4, Resp).
