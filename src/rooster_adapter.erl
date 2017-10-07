@@ -29,8 +29,7 @@ config(Conf) ->
 state(State) ->
   Default = #{routes       => [],
               middleware   => [],
-              resp_headers => [],
-              version      => "0.0.0"},
+              resp_headers => []},
   flatt_routes(maps:merge(Default, State)).
 
 flatt_routes(#{routes := Routes} = State)->
