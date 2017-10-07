@@ -1,7 +1,7 @@
 -module(rooster).
 -include_lib("rooster.hrl").
 
--export([stop/0, analyze_request/4, start/1]).
+-export([stop/0, analyze_request/3, start/2]).
 
 %%  @doc ensure that application is started
 %%
@@ -17,11 +17,11 @@ ensure_started(App) ->
 
 %% @doc start rooster server
 %%
--spec start(config()) -> 'ignore' | {'error', _} | {'ok', pid()}.
+-spec start(config(), state()) -> 'ignore' | {'error', _} | {'ok', pid()}.
 
-start(State) ->
+start(SrvConf, State) ->
   ensure_started(crypto),
-  rooster_holder:start(State),
+  rooster_holder:start([SrvConf, State]),
   application:start(rooster).
 
 %% @doc Stop the rooster server.
@@ -34,9 +34,9 @@ stop() ->
 
 %% @doc analyze request
 %%
--spec analyze_request(request(), [route()], [middleware()], list()) -> response().
+-spec analyze_request(request(), [route()], list()) -> response().
 
-analyze_request(Req, Routes, Middleware, Cors) ->
-  {ok, Pid} = rooster_srv:start({Routes, Middleware, Cors}),
+analyze_request(Req, Routes, Cors) ->
+  {ok, Pid} = rooster_srv:start({Routes, Cors}),
   rooster_srv:analyze_route(Pid, Req).
 

@@ -6,9 +6,9 @@
 
 %% @doc API for starting the supervisor.
 %%
-start_link(State) ->
-  Conf = rooster_adapter:config(State),
-  supervisor:start_link({local, ?MODULE}, ?MODULE, Conf).
+start_link([SrvConf, State]) ->
+  ISrvConf = rooster_adapter:config(SrvConf),
+  supervisor:start_link({local, ?MODULE}, ?MODULE, [ISrvConf, State]).
 
 %% @doc Add processes if necessary.
 %%
@@ -30,12 +30,12 @@ upgrade() ->
 
 %% @doc supervisor callback.
 %%
-init(#{port := Port} = Conf) ->
-  Web = web_specs(rooster_web, Conf),
-  RoosterConfig = rooster_config_specs(),
+init([Conf, State]) ->
+  WebSpecs = web_specs(rooster_web, Conf),
+  MiddlewareSpecs = middleware_specs(State),
+  StateSpecs = state_specs(State),
   rooster_deps:ensure(),
-  io:format("~nrooster listening on port ~p~n", [Port]),
-  {ok, {{one_for_one, 10, 10}, [RoosterConfig, Web]}}.
+  {ok, {{one_for_one, 10, 10}, [MiddlewareSpecs, StateSpecs, WebSpecs]}}.
 
 %% @doc generate mochiweb specs to be used by supervisor
 %%
@@ -46,9 +46,22 @@ web_specs(Mod, #{ip := Ip, port := Port, static_path := Sp, ssl := Ssl, ssl_opts
     Ssl, Ssl_opts],
   {Mod, {Mod, start, [WebConfig]}, permanent, 5000, worker, dynamic}.
 
-%% @doc generate rooster_config specs to be used by supervisor
+%% @doc generate rooster_state specs to be used by supervisor
 %%
-rooster_config_specs() ->
-  {rooster_config,
-    {rooster_config, start, []},
-    permanent, 5000, worker, []}.
+state_specs(State) ->
+  #{id       => rooster_state,
+    start    => {rooster_state, start_link, [State]},
+    restart  => permanent,
+    shutdown => brutal_kill,
+    type     => worker,
+    modules  => []}.
+
+%% @doc generate rooster_middleware specs to be used by supervisor
+%%
+middleware_specs(#{middleware := Middleware}) ->
+  #{id       => rooster_middleware,
+    start    => {rooster_middleware, start_link, [Middleware]},
+    restart  => permanent,
+    shutdown => brutal_kill,
+    type     => worker,
+    modules  => []}.

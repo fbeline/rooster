@@ -1,5 +1,5 @@
--type state() :: #{routes       => list(atom()),
-                   middleware   => list(atom()),
+-type state() :: #{routes       => list(route()),
+                   middleware   => list(map()),
                    resp_headers => list({string(), string()}),
                    version      => string()}.
 
@@ -18,6 +18,6 @@
                     ssl         => any(),
                     ssl_opts    => any()}.
 
--type route() :: {module(), atom(), string(), any()}.
--type middleware() :: {module(), atom(), string(), any()}.
+-type route() :: {atom(), string(), any(), list(map())}.
+-type middleware() :: map().
 -type response() :: {integer(), any()}.

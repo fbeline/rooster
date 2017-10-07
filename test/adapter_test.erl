@@ -3,9 +3,6 @@
 
 -include_lib("eunit/include/eunit.hrl").
 
-simple_test() ->
-  ?assert(true).
-
 config_adapter_test() ->
   Expected = #{ip          => {0, 0, 0, 0},
                port        => 8080,
@@ -17,6 +14,15 @@ config_adapter_test() ->
 state_adapter_test() ->
   Expected = #{routes       => [],
                middleware   => [],
-               resp_headers => [],
-               version      => "0.0.0"},
+               resp_headers => []},
   ?assertEqual(Expected, rooster_adapter:state(#{})).
+
+middleware_test() ->
+  Result = rooster_adapter:middleware(#{name => m_test}),
+  ?assertEqual(m_test, maps:get(name, Result)),
+  ?assert(is_function(maps:get(enter, Result))),
+  ?assert(is_function(maps:get(leave, Result))).
+
+flatt_routes_test() ->
+  Result = rooster_adapter:flatt_routes(#{routes => [[1], [2]]}),
+  ?assertEqual(#{routes => [1, 2]}, Result).

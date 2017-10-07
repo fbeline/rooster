@@ -1,37 +1,71 @@
 -module(rooster_middleware).
--include_lib("rooster.hrl").
 
--export([match/4]).
+-behaviour(gen_server).
 
-%% @doc filter matched middlewares and execute it
-%%
--spec match(atom(), request(), [middleware()], any()) -> any().
+%% API
+-export([start_link/1]).
 
-match(_, _, [], Resp) -> {next, Resp};
-match(Type, #{path := Path} = Req, Middleware = [{_, Type, Regex, _} | _], Resp) ->
-  Match = re:run(Path, Regex),
-  middleware_regex_match(Match, Req, Middleware, Resp);
+%% gen_server callbacks
+-export([init/1, handle_call/3, handle_cast/2,
+         handle_info/2, terminate/2, code_change/3,
+         enter/2, leave/2]).
 
-match(Type, Req, [_ | T], Resp) ->
-  match(Type, Req, T, Resp).
+%%%===================================================================
+%%% API
+%%%===================================================================
 
-%% @doc execute middleware if regex matches
-%%
--spec middleware_regex_match(atom(), request(), [middleware()], any()) -> any().
+start_link(State) ->
+  gen_server:start_link({local, ?MODULE}, ?MODULE, State, []).
 
-middleware_regex_match(nomatch, Req, [{_, Type, _, _} | T], Resp) ->
-  match(Type, Req, T, Resp);
+enter(ReqResp, Names) -> dispatch(ReqResp, Names, enter).
 
-middleware_regex_match(_, Req, [{Module, Type, _, Function} | T], Resp) ->
-  {Instruction, NewResp} = apply(Module, Function, [Req, Resp]),
-  execute_next(Instruction, {Type, Req, T}, NewResp).
+leave(ReqResp, Names) -> dispatch(ReqResp, Names, leave).
 
-%% @doc execute next middleware or end the cycle
-%%
--spec execute_next(atom(), {atom(), request(), [middleware()]}, any()) -> any().
+%%%===================================================================
+%%% gen_server callbacks
+%%%===================================================================
 
-execute_next(next, {Type, Req, Tail}, Resp) ->
-  match(Type, Req, Tail, Resp);
+init(Env) ->
+  InternalState = lists:map(fun rooster_adapter:middleware/1, Env),
+  {ok, InternalState}.
 
-execute_next(_, _, Resp) ->
-  {break, Resp}.
+handle_call(get_state, _From, State) ->
+  {reply, State, State}.
+
+handle_cast(_Request, State) ->
+  {noreply, State}.
+
+handle_info(_Info, State) ->
+  {noreply, State}.
+
+terminate(_Reason, _State) ->
+  ok.
+
+code_change(_OldVsn, State, _Extra) ->
+  {ok, State}.
+
+%%%===================================================================
+%%% Internal functions
+%%%===================================================================
+
+dispatch(ReqResp, Names, Action) ->
+  State = gen_server:call(?MODULE, get_state),
+  Middleware = match_middleware(Names, State),
+  middleware_reduce(ReqResp, Middleware, Action).
+
+match_middleware(Names, Middleware) -> match_middleware(Names, Middleware, []).
+match_middleware(_, [], Acc) -> Acc;
+match_middleware(Names, [Middleware | T], Acc) ->
+  Match = lists:filter(fun(Name) -> Name =:= maps:get(name, Middleware) end, Names),
+  add_middleware(Match, {Names, T, Middleware, Acc}).
+
+add_middleware([], {Names, T, _, Acc}) ->
+  match_middleware(Names, T, Acc);
+add_middleware(_, {Names, T, Middleware, Acc}) ->
+  match_middleware(Names, T, [Middleware] ++ Acc).
+
+middleware_reduce(ReqResp, [], _) -> ReqResp;
+middleware_reduce(ReqResp, [Middleware | T], Action) ->
+  Fun = maps:get(Action, Middleware),
+  middleware_reduce(Fun(ReqResp), T, Action).
+
