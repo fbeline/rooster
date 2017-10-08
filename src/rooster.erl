@@ -1,7 +1,7 @@
 -module(rooster).
 -include_lib("rooster.hrl").
 
--export([stop/0, analyze_request/3, start/2]).
+-export([stop/0, start/2]).
 
 %%  @doc ensure that application is started
 %%
@@ -31,12 +31,4 @@ start(SrvConf, State) ->
 stop() ->
   application:stop(rooster).
 
-
-%% @doc analyze request
-%%
--spec analyze_request(request(), [route()], list()) -> response().
-
-analyze_request(Req, Routes, Cors) ->
-  {ok, Pid} = rooster_srv:start({Routes, Cors}),
-  rooster_srv:analyze_route(Pid, Req).
 

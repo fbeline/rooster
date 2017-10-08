@@ -10,7 +10,7 @@
 match_route(#{path := Path, method := Method} = Req, Routes) ->
   match_route(Path, Method, Req, Routes).
 
-match_route(_, _, _Req, []) -> {404, []};
+match_route(_, _, _Req, []) -> {404, #{message => <<"Not found">>}};
 match_route(RequestedRoute, Method, Req, [{Method, Route, Fn, Middleware} | T]) ->
   RouteTokens = parse_route(Route),
   RequestedRouteTokens = parse_route(RequestedRoute),
@@ -29,7 +29,8 @@ match_route(Route, M1, Req, [_ | T]) -> match_route(Route, M1, Req, T).
 
 handle_request(Request, Fn, Middleware) ->
   Req = rooster_middleware:enter(Request, Middleware),
-  rooster_middleware:leave(Fn(Req), Middleware).
+  RouteResponse = rooster_adapter:route_response(Fn(Req)),
+  rooster_middleware:leave(RouteResponse, Middleware).
 
 %% @doc Parse a route in tokens
 %%
