@@ -25,7 +25,7 @@ Simple route example.
 -export([exports/0, get_products/1, save_product/1, get_product/1]).
 
 get_products(_Req) ->
-  {200, #{id => 43, price => 150}}.	
+  {200, #{id => 43, price => 150}, [{"custom-header", "foo"}]}.
 
 get_product(#{pathParams := PathParams}) ->
   Id = proplists:get_value(":id", PathParams),
@@ -66,7 +66,7 @@ Follows an example that get the Response returned by a route (or other `leave` m
 
 double() ->
   #{name  => double,
-    leave => fun({Status, Resp}) -> {Status, #{result => Resp * 2}} end}.
+    leave => fun({Status, Resp, Headers}) -> {Status, #{result => Resp * 2}, Headers} end}.
 ```
 
 The middleware map can have both `leave` and `enter` keys. The `enter` function will have access to the request information and will be able to change it, the `leave` function will have access to the response and will be able to change it as well.
