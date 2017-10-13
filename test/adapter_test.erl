@@ -12,8 +12,8 @@ config_adapter_test() ->
   ?assertEqual(Expected, rooster_adapter:config(#{})).
 
 state_adapter_test() ->
-  Expected = #{routes       => [],
-               middleware   => []},
+  Expected = #{routes     => [],
+               middleware => []},
   ?assertEqual(Expected, rooster_adapter:state(#{})).
 
 middleware_test() ->
@@ -26,11 +26,20 @@ flatt_routes_test() ->
   Result = rooster_adapter:flatt_routes(#{routes => [[1], [2]]}),
   ?assertEqual(#{routes => [1, 2]}, Result).
 
+base_headers_test() ->
+  ?assertEqual(rooster_adapter:base_headers(), [{"Content-type", "application/json"}]).
+
+add_headers_test() ->
+  Expected = #{routes     => [{'GET', "foo", foo, [{"Content-type", "application/json"}]}],
+               middleware => []},
+  Input = #{routes     => [{'GET', "foo", foo}],
+            middleware => []},
+  ?assertEqual(Expected, rooster_adapter:add_headers(Input)).
+
 server_response_test() ->
   Result = rooster_adapter:server_response({200, #{}, [{"authorization","foo"}]}),
   ?assertEqual({200,
-                [{"Content-type", "application/json"},
-                 {"authorization","foo"}],
+                [{"authorization","foo"}],
                 <<"{}">>}, Result).
 
 route_response_test() ->
