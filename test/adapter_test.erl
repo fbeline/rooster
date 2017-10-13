@@ -1,5 +1,4 @@
 -module(adapter_test).
--author("felipe").
 
 -include_lib("eunit/include/eunit.hrl").
 
