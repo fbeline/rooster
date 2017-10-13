@@ -35,9 +35,9 @@ save_product(#{body := Body}) ->
   {201, Body}.
 
 exports() ->
-  [{'GET', "products", ?MODULE:get_products/1, []},
-   {'GET', "products/:id", ?MODULE:get_product/1, []},
-   {'POST', "products", ?MODULE:save_product/1, [some_auth_middleware_name]}].
+  [{'GET', "products", fun ?MODULE:get_products/1},
+   {'GET', "products/:id", fun ?MODULE:get_product/1},
+   {'POST', "products", fun ?MODULE:save_product/1, [some_auth_middleware_name]}].
 ```
 
 The **exports** method will provide the list of available endpoints that this module contains. Each tuple should have the HTTP method, the route itself, the route function and the middleware (name) that will be executed for this route. 
@@ -81,8 +81,8 @@ under construction..
 After generating the SSL certificate for your domain, everything that needs to be done is to pass some extra parameters for the server configuration map: (**ssl** and **ssl_opts**).
 
 ```Erlang
-#{port => 8080,
-  ssl => {ssl, false},
+#{port     => 8080,
+  ssl      => {ssl, false},
   ssl_opts => {ssl_opts, [{certfile, "{PATH}/server_cert.pem"},
                           {keyfile, "{PATH}/server_key."}]}}
 ```
