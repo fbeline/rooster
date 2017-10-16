@@ -1,6 +1,5 @@
 -module(basic_auth_test).
 
--include_lib("../include/rooster.hrl").
 -include_lib("eunit/include/eunit.hrl").
 
 is_authorized_sanity_test() ->

@@ -1,5 +1,4 @@
 -module(dispatcher_test).
--include_lib("../include/rooster.hrl").
 -include_lib("eunit/include/eunit.hrl").
 
 -export([route_function/2]).

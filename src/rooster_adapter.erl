@@ -1,6 +1,6 @@
 -module(rooster_adapter).
 
--export([config/1, state/1, middleware/1, route_response/1, server_response/1]).
+-export([config/1, state/1, middleware/1, route_response/1, server_response/1, request/1]).
 
 -ifdef(TEST).
 -compile(export_all).
@@ -48,7 +48,19 @@ server_response({Status, Response, Header}) ->
   Headers = base_headers() ++ Header,
   {Status, Headers, rooster_json:encode(Response)}.
 
+
 route_response({Status, Resp}) ->
   {Status, Resp, []};
 route_response(Response) ->
   Response.
+
+request(Req) ->
+  "/" ++ Path = Req:get(path),
+  #{path          => Path,
+    method        => Req:get(method),
+    headers       => Req:get(headers),
+    body          => rooster_json:decode(Req:recv_body()),
+    qs            => Req:parse_qs(),
+    cookies       => Req:parse_cookie(),
+    params        => [],
+    authorization => Req:get_header_value('Authorization')}.
