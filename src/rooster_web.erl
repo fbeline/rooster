@@ -14,24 +14,13 @@ start(Options) ->
 
 loop(Req, _DocRoot, Routes) ->
   try
-    Response = analyze_request(create_request(Req), Routes),
+    Response = analyze_request(rooster_adapter:request(Req), Routes),
     Req:respond(Response)
   catch
     Type:What ->
       log_error(Type, What),
       Req:respond({500, [{"Content-Type", "application/json"}], request_fail_msg()})
   end.
-
-create_request(Req) ->
-  "/" ++ Path = Req:get(path),
-  #{path          => Path,
-    method        => Req:get(method),
-    headers       => Req:get(headers),
-    body          => rooster_json:decode(Req:recv_body()),
-    qs            => Req:parse_qs(),
-    cookies       => Req:parse_cookie(),
-    pathParams    => [],
-    authorization => Req:get_header_value('Authorization')}.
 
 analyze_request(Req, Routes) ->
   {ok, Pid} = rooster_srv:start(Routes),
