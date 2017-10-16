@@ -1,6 +1,5 @@
 -module(middleware_test).
 
--include_lib("../include/rooster.hrl").
 -include_lib("eunit/include/eunit.hrl").
 
 
