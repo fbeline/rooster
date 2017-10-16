@@ -11,9 +11,9 @@ match_route(_, _, _Req, []) -> {404, #{message => <<"Not found">>}};
 match_route(RequestedRoute, Method, Req, [{Method, Route, Fn, Middleware} | T]) ->
   RouteTokens = parse_route(Route),
   RequestedRouteTokens = parse_route(RequestedRoute),
-  {IsValid, PathParams} = compare_route_tokens(RouteTokens, RequestedRouteTokens, []),
+  {IsValid, Params} = compare_route_tokens(RouteTokens, RequestedRouteTokens, []),
   if IsValid =:= true ->
-    handle_request(Req#{pathParams := PathParams}, Fn, Middleware);
+    handle_request(Req#{params := Params}, Fn, Middleware);
     true ->
       match_route(RequestedRoute, Method, Req, T)
   end;
