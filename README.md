@@ -27,8 +27,8 @@ Simple route example.
 get_products(_Req) ->
   {200, #{id => 43, price => 150}, [{"custom-header", "foo"}]}.
 
-get_product(#{pathParams := PathParams}) ->
-  Id = proplists:get_value(":id", PathParams),
+get_product(#{params := params}) ->
+  Id = proplists:get_value(":id", params),
   {200, #{id => Id, price => 8000}}.
 
 save_product(#{body := Body}) ->
@@ -51,7 +51,7 @@ Is important to note that the function **must** have one parameter, that will co
   headers       => ...,
   body          => ...,
   qs            => ...,
-  pathParams    => ...,
+  params        => ...,
   cookies       => ...,
   authorization => ...}
 ```
@@ -82,9 +82,9 @@ After generating the SSL certificate for your domain, everything that needs to b
 
 ```Erlang
 #{port     => 8080,
-  ssl      => {ssl, false},
+  ssl      => {ssl, true},
   ssl_opts => {ssl_opts, [{certfile, "{PATH}/server_cert.pem"},
-                          {keyfile, "{PATH}/server_key."}]}}
+                          {keyfile, "{PATH}/server_key.pem"}]}}
 ```
 
 ## Benchmark
