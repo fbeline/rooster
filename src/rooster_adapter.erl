@@ -1,5 +1,4 @@
 -module(rooster_adapter).
--include_lib("rooster.hrl").
 
 -export([config/1, state/1, middleware/1, route_response/1, server_response/1]).
 

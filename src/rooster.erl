@@ -1,7 +1,18 @@
 -module(rooster).
--include_lib("rooster.hrl").
 
 -export([stop/0, start/2]).
+
+
+-type route() :: {atom(), string(), any(), list(map())}.
+-type config() :: #{ip          => {integer(), integer(), integer(), integer()},
+                    port        => integer(),
+                    static_path => list(string()),
+                    ssl         => any(),
+                    ssl_opts    => any()}.
+
+-type state() :: #{routes => list(route()),
+                   middleware => list(map())}.
+
 
 %%  @doc ensure that application is started
 %%
