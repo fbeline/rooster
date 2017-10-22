@@ -1,11 +1,7 @@
 -module(rooster_middleware).
-
 -behaviour(gen_server).
 
-%% API
 -export([start_link/1]).
-
-%% gen_server callbacks
 -export([init/1, handle_call/3, handle_cast/2,
          handle_info/2, terminate/2, code_change/3,
          enter/2, leave/2]).
@@ -13,7 +9,6 @@
 %%%===================================================================
 %%% API
 %%%===================================================================
-
 start_link(State) ->
   gen_server:start_link({local, ?MODULE}, ?MODULE, State, []).
 
@@ -24,7 +19,6 @@ leave(ReqResp, Names) -> dispatch(ReqResp, Names, leave).
 %%%===================================================================
 %%% gen_server callbacks
 %%%===================================================================
-
 init(Env) ->
   InternalState = lists:map(fun rooster_adapter:middleware/1, Env),
   {ok, InternalState}.
@@ -47,7 +41,6 @@ code_change(_OldVsn, State, _Extra) ->
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
-
 dispatch(ReqResp, Names, Action) ->
   State = gen_server:call(?MODULE, get_state),
   Middleware = match_middleware(Names, State),
