@@ -4,14 +4,23 @@
 -export([start_link/1, upgrade/0]).
 -export([init/1]).
 
-%% @doc API for starting the supervisor.
-%%
+%% ===============
+%%% API functions
+%% ===============
 start_link([SrvConf, State]) ->
   ISrvConf = rooster_adapter:config(SrvConf),
   supervisor:start_link({local, ?MODULE}, ?MODULE, [ISrvConf, State]).
 
-%% @doc Add processes if necessary.
-%%
+%% ===============
+%%% Supervisor callbacks
+%% ===============
+init([Conf, State]) ->
+  WebSpecs = web_specs(rooster_web, Conf),
+  MiddlewareSpecs = middleware_specs(State),
+  StateSpecs = state_specs(State),
+  rooster_deps:ensure(),
+  {ok, {{one_for_one, 10, 10}, [MiddlewareSpecs, StateSpecs, WebSpecs]}}.
+
 upgrade() ->
   {ok, {_, Specs}} = init([]),
   Old = sets:from_list(
@@ -28,17 +37,9 @@ upgrade() ->
   [supervisor:start_child(?MODULE, Spec) || Spec <- Specs],
   ok.
 
-%% @doc supervisor callback.
-%%
-init([Conf, State]) ->
-  WebSpecs = web_specs(rooster_web, Conf),
-  MiddlewareSpecs = middleware_specs(State),
-  StateSpecs = state_specs(State),
-  rooster_deps:ensure(),
-  {ok, {{one_for_one, 10, 10}, [MiddlewareSpecs, StateSpecs, WebSpecs]}}.
-
-%% @doc generate mochiweb specs to be used by supervisor
-%%
+%% ===============
+%%% Internal functions
+%% ===============
 web_specs(Mod, #{ip := Ip, port := Port, static_path := Sp, ssl := Ssl, ssl_opts := Ssl_opts}) ->
   WebConfig = [{ip, Ip},
     {port, Port},
@@ -46,8 +47,6 @@ web_specs(Mod, #{ip := Ip, port := Port, static_path := Sp, ssl := Ssl, ssl_opts
     Ssl, Ssl_opts],
   {Mod, {Mod, start, [WebConfig]}, permanent, 5000, worker, dynamic}.
 
-%% @doc generate rooster_state specs to be used by supervisor
-%%
 state_specs(State) ->
   #{id       => rooster_state,
     start    => {rooster_state, start_link, [State]},
@@ -56,8 +55,6 @@ state_specs(State) ->
     type     => worker,
     modules  => []}.
 
-%% @doc generate rooster_middleware specs to be used by supervisor
-%%
 middleware_specs(#{middleware := Middleware}) ->
   #{id       => rooster_middleware,
     start    => {rooster_middleware, start_link, [Middleware]},

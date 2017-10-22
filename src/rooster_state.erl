@@ -15,7 +15,6 @@ start_link(State) ->
 stop() ->
   gen_server:cast(?MODULE, stop).
 
-
 %% ===============
 %% Server API
 %% ===============
@@ -27,7 +26,6 @@ handle_cast({set_state, State}, _State) ->
 
 handle_call(get_state, _From, State) ->
   {reply, State, State}.
-
 
 %% ===============
 %% Server callbacks
