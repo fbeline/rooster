@@ -1,4 +1,4 @@
-%% -*- erlang -*-20
+%% -*- erlang -*-20rooster_adapter:server_response
 {application, rooster,
   [{description, "Rest framework built on top of mochiweb"},
    {vsn, "0.1"},
@@ -6,7 +6,6 @@
               rooster,
               rooster_app,
               rooster_json,
-              rooster_srv,
               rooster_state,
               rooster_middleware,
               rooster_dispatcher,
