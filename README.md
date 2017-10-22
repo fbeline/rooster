@@ -28,7 +28,7 @@ get_products(_Req) ->
   {200, #{id => 43, price => 150}, [{"custom-header", "foo"}]}.
 
 get_product(#{params := params}) ->
-  Id = proplists:get_value(":id", params),
+  Id = maps:get(id, params),
   {200, #{id => Id, price => 8000}}.
 
 save_product(#{body := Body}) ->
