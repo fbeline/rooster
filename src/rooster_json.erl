@@ -12,4 +12,4 @@ decode(Term) ->
            undefined -> erlang:list_to_binary("{}");
            Bin -> Bin
          end,
-  jsx:decode(Data).
+  jsx:decode(Data, [{labels, atom}, return_maps]).
