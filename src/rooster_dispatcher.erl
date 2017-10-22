@@ -9,7 +9,7 @@ match_route(_, _, _Req, []) -> {404, #{message => <<"Not found">>}};
 match_route(RequestedRoute, Method, Req, [{Method, Route, Fn, Middleware} | T]) ->
   RouteTokens = parse_route(Route),
   RequestedRouteTokens = parse_route(RequestedRoute),
-  {IsValid, Params} = compare_route_tokens(RouteTokens, RequestedRouteTokens, []),
+  {IsValid, Params} = compare_route_tokens(RouteTokens, RequestedRouteTokens, #{}),
   if IsValid =:= true ->
     handle_request(Req#{params := Params}, Fn, Middleware);
     true ->
@@ -34,9 +34,12 @@ compare_route_tokens([H1 | T1], [H2 | T2], Acc) ->
   IsPathParam = string:str(H1, ":") =:= 1,
   SameToken = H1 =:= H2,
   if IsPathParam ->
-    compare_route_tokens(T1, T2, Acc ++ [{H1, H2}]);
+    compare_route_tokens(T1, T2, new_param(Acc, {H1, H2}));
     SameToken ->
       compare_route_tokens(T1, T2, Acc);
     true ->
       {false, {}}
   end.
+
+new_param(Params, {Key, Value}) ->
+  Params#{erlang:list_to_atom(string:slice(Key, 1)) => Value}.
