@@ -1,4 +1,4 @@
-# Rooster [![Build Status](https://travis-ci.org/FelipeBB/rooster.svg?branch=master)](https://travis-ci.org/FelipeBB/rooster) 
+# Rooster [![Build Status](https://travis-ci.org/fbeline/rooster.svg?branch=master)](https://travis-ci.org/FelipeBB/rooster) 
 Simplistic REST framework that runs on top of mochiweb.
 ## Features
 - **Routes** that supports `GET` `POST` `PUT` and `DELETE` methods.
