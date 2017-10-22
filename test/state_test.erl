@@ -8,4 +8,3 @@ simple_test() ->
   ?assertEqual(#{middleware   => [],
                  routes       => []},
                State).
-

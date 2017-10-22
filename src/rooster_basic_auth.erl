@@ -4,10 +4,7 @@
 
 -type credentials() :: {string(), string()}.
 
-%% @doc check if the request basic authentication 
-%% credentials match the configured
 -spec is_authorized(string(), credentials()) -> true | false.
-
 is_authorized(Auth, Credentials) ->
   try
     "Basic" ++ EncodedCredentials = Auth,
@@ -18,10 +15,7 @@ is_authorized(Auth, Credentials) ->
       false
   end.
 
-%% @doc decode base64 credential
-%%
 -spec parse_credentials(string()) -> credentials() | malformed_credentials.
-
 parse_credentials(EncodedCredentials) ->
   Credentials = base64:decode_to_string(EncodedCredentials),
   case string:tokens(Credentials, ":") of

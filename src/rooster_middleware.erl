@@ -68,4 +68,3 @@ middleware_reduce(ReqResp, [], _) -> ReqResp;
 middleware_reduce(ReqResp, [Middleware | T], Action) ->
   Fun = maps:get(Action, Middleware),
   middleware_reduce(Fun(ReqResp), T, Action).
-

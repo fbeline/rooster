@@ -2,7 +2,6 @@
 
 -include_lib("eunit/include/eunit.hrl").
 
-
 middleware() ->
   [#{name => foo, leave => fun(Resp) -> Resp * 2 end},
    #{name => bar, enter => fun(Req) -> Req * 3 end},
