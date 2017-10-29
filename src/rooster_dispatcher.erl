@@ -18,9 +18,14 @@ match_route(RequestedRoute, Method, Req, [{Method, Route, Fn, Middleware} | T]) 
 match_route(Route, M1, Req, [_ | T]) -> match_route(Route, M1, Req, T).
 
 handle_request(Request, Fn, Middleware) ->
-  Req = rooster_middleware:enter(Request, Middleware),
+  Res = rooster_middleware:enter(Request, Middleware),
+  call_route(Res, Fn, Middleware).
+
+call_route({break, Resp}, _, _) -> rooster_adapter:route_response(Resp);
+call_route({ok, Req}, Fn, Middleware)->
   RouteResponse = rooster_adapter:route_response(Fn(Req)),
-  rooster_middleware:leave(RouteResponse, Middleware).
+  {_, Response} = rooster_middleware:leave(RouteResponse, Middleware),
+  Response.
 
 parse_route(Route) ->
   [RouteWithoutQueryParams | _] = string:tokens(Route, "?"),

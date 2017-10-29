@@ -21,7 +21,6 @@ Simplistic REST framework that runs on top of mochiweb.
 Simple route example.
 
 ```Erlang
--module(route_example).
 -export([exports/0, get_products/1, save_product/1, get_product/1]).
 
 get_products(_Req) ->
@@ -37,7 +36,7 @@ save_product(#{body := Body}) ->
 exports() ->
   [{'GET', "products", fun ?MODULE:get_products/1},
    {'GET', "products/:id", fun ?MODULE:get_product/1},
-   {'POST', "products", fun ?MODULE:save_product/1, [some_auth_middleware_name]}].
+   {'POST', "products", fun ?MODULE:save_product/1, [auth]}].
 ```
 
 The **exports** method will provide the list of available endpoints that this module contains. Each tuple should have the HTTP method, the route itself, the route function and the middleware (name) that will be executed for this route. 
@@ -58,10 +57,9 @@ Is important to note that the function **must** have one parameter, that will co
 
 ## Middleware example
 
-Follows an example that get the Response returned by a route (or other `leave` middleware) and multiply it by 2.
+- Middleware get the response returned by route (or other `leave` middleware) and multiply it by 2.
 
 ```Erlang
--module(middleware_example).
 -export([double/0]).
 
 double() ->
@@ -69,9 +67,29 @@ double() ->
     leave => fun({Status, Resp, Headers}) -> {Status, #{result => Resp * 2}, Headers} end}.
 ```
 
-The middleware map can have both `leave` and `enter` keys. The `enter` function will have access to the request information and will be able to change it, the `leave` function will have access to the response and will be able to change it as well.
+- Middleware used to authenticate through basic authentication.
 
-![middleware](https://user-images.githubusercontent.com/5730881/31311878-008f3808-ab8c-11e7-9712-cbd0047321ef.png)
+```erlang
+-export([auth/0, basic_auth/1]).
+
+basic_auth(#{authorization := Auth} = Req) ->
+  Authorizated = rooster_basic_auth:is_authorized(Auth, {"admin", "admin"}),
+  case Authorizated of
+    true ->
+      Req;
+    _ ->
+      {break, {403, #{reason => <<"Acess Forbidden">>}}}
+  end.
+  
+auth() ->
+  #{name => auth,
+    enter => fun basic_auth/1}.
+```
+
+The middleware map can have both `leave` and `enter` keys. The `enter` function will have access to the request information and will be able to change it, the `leave` function will have access to the response and will be able to change it as well.
+At any moment that a middleware returns `{break, {status, response}}` the chain of execution will be break and the `response` will be evaluated as the request result.
+
+![middleware](https://user-images.githubusercontent.com/5730881/32140052-75ae38aa-bc3a-11e7-9f54-855b96390bd9.png)
 
 ## How to configure and run
 

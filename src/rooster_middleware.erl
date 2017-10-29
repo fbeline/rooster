@@ -57,7 +57,8 @@ add_middleware([], {Names, T, _, Acc}) ->
 add_middleware(_, {Names, T, Middleware, Acc}) ->
   match_middleware(Names, T, [Middleware] ++ Acc).
 
-middleware_reduce(ReqResp, [], _) -> ReqResp;
+middleware_reduce(ReqResp, [], _) -> {ok, ReqResp};
+middleware_reduce({break, Resp}, _, _) -> {break, Resp};
 middleware_reduce(ReqResp, [Middleware | T], Action) ->
   Fun = maps:get(Action, Middleware),
   middleware_reduce(Fun(ReqResp), T, Action).
