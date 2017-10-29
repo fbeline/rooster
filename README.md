@@ -1,4 +1,4 @@
-# Rooster [![Build Status](https://travis-ci.org/fbeline/rooster.svg?branch=master)](https://travis-ci.org/FelipeBB/rooster) 
+# Rooster [![Build Status](https://travis-ci.org/fbeline/rooster.svg?branch=master)](https://travis-ci.org/fbeline/rooster) 
 Simplistic REST framework that runs on top of mochiweb.
 ## Features
 - **Routes** that supports `GET` `POST` `PUT` and `DELETE` methods.
@@ -13,7 +13,7 @@ Simplistic REST framework that runs on top of mochiweb.
 
 3) Edit the file **rebar.config** and add the following lines inside deps:
 
-`{deps, [ {rooster, ".*", {git, "git://github.com/FelipeBB/rooster.git", {branch, "master"}}} ]}.`
+`{deps, [ {rooster, ".*", {git, "git://github.com/fbeline/rooster.git", {branch, "master"}}} ]}.`
 
 4) Run the command: rebar3 compile
 
