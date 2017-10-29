@@ -21,7 +21,7 @@ Simplistic REST framework that runs on top of mochiweb.
 Simple route example.
 
 ```Erlang
--export([exports/0, get_products/1, save_product/1, get_product/1]).
+-export([exports/0]).
 
 get_products(_Req) ->
   {200, #{id => 43, price => 150}, [{"custom-header", "foo"}]}.
@@ -34,9 +34,9 @@ save_product(#{body := Body}) ->
   {201, Body}.
 
 exports() ->
-  [{'GET', "products", fun ?MODULE:get_products/1},
-   {'GET', "products/:id", fun ?MODULE:get_product/1},
-   {'POST', "products", fun ?MODULE:save_product/1, [auth]}].
+  [{'GET', "products", fun get_products/1},
+   {'GET', "products/:id", fun get_product/1},
+   {'POST', "products", fun save_product/1, [auth]}].
 ```
 
 The **exports** method will provide the list of available endpoints that this module contains. Each tuple should have the HTTP method, the route itself, the route function and the middleware (name) that will be executed for this route. 
@@ -70,7 +70,7 @@ double() ->
 - Middleware used to authenticate through basic authentication.
 
 ```erlang
--export([auth/0, basic_auth/1]).
+-export([auth/0]).
 
 basic_auth(#{authorization := Auth} = Req) ->
   Authorizated = rooster_basic_auth:is_authorized(Auth, {"admin", "admin"}),
@@ -110,12 +110,9 @@ After generating the SSL certificate for your domain, everything that needs to b
 The tests were made on a machine with 4 cores of 3.10GHz and 8gb of RAM running a Ubuntu OS version 16.04. All the tested API's was handling exactly the same request, under the minimal framework configuration.
 The tool used to benchmark the API's was the [wrk](https://github.com/wg/wrk).
 
-
 ![benchmark](https://cloud.githubusercontent.com/assets/5730881/23285787/09a2bfb8-fa12-11e6-990e-6a7014f52122.png)
 
-
-You can find the complete information around this benchmark inside the file **benchmark.txt**
-
+You can find the complete information around this benchmark inside the file [**benchmark**](benchmark.txt)
 
 ## Dependencies
 - mochiweb: HTTP server
