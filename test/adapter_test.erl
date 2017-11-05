@@ -52,3 +52,16 @@ base_headers_test() ->
 
 base_middleware_test() ->
   ?assertEqual([], rooster_adapter:base_middleware()).
+
+nested_route_test() ->
+  Fn = fun() -> 1 end,
+  Nested = [{'GET', Fn, [test]},
+            {'POST', Fn},
+            {'GET', "/permissions", Fn},
+            {'GET', "/health", Fn, [test]}],
+  Expected = [{'GET', "", Fn, [test]},
+              {'POST',"", Fn, []},
+              {'GET', "/permissions", Fn, []},
+              {'GET', "/health", Fn, [test]}],
+  Result = rooster_adapter:nested_route(Nested),
+  ?assertEqual(Expected, Result).
