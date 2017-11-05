@@ -31,14 +31,14 @@ expected_complete_routes(Fn) ->
 start_test() ->
   Fn = fun() -> foo end,
   rooster_route:start_link(routes(Fn)),
-  Routes = gen_server:call(rooster_route, get_state),
+  Routes = rooster_route:get(),
   gen_server:stop(rooster_route),
   ?assert(erlang:is_list(Routes)).
 
 routes_sanity_test() ->
   Fn = fun() -> foo end,
   rooster_route:start_link(routes(Fn)),
-  Routes = gen_server:call(rooster_route, get_state),
+  Routes = rooster_route:get(),
   gen_server:stop(rooster_route),
   ?assertEqual(expected_routes(Fn), Routes).
 
@@ -46,7 +46,7 @@ mixed_routes_test() ->
   Fn = fun() -> foo end,
   rooster_route:terminate(nil, nil),
   rooster_route:start_link(mixed_routes(Fn)),
-  Routes = gen_server:call(rooster_route, get_state),
+  Routes = rooster_route:get(),
   ?assertEqual(expected_mixed_routes(Fn), Routes).
 
 nested_test() ->

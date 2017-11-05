@@ -1,6 +1,6 @@
 -module(rooster_adapter).
 
--export([config/1, state/1, middleware/1, route_response/1, server_response/1, request/1]).
+-export([config/1, state/1, middleware/1, route_response/1, server_response/1, request/1, nested_route/1]).
 
 -ifdef(TEST).
 -compile(export_all).
@@ -23,20 +23,7 @@ config(Conf) ->
 state(State) ->
   Default = #{routes       => [],
               middleware   => []},
-  add_base_middleware(flatt_routes(maps:merge(Default, State))).
-
-flatt_routes(#{routes := Routes} = State)->
-  State#{routes := lists:flatten(Routes)}.
-
-add_base_middleware(#{routes := Routes} = State) ->
-  State#{routes := add_base_middleware(Routes, [])}.
-
-add_base_middleware([], Acc) ->
-  Acc;
-add_base_middleware([{Method, Path, Fn} | T], Acc) ->
-  add_base_middleware(T, Acc ++ [{Method, Path, Fn, base_middleware()}]);
-add_base_middleware([{Method, Path, Fn, Middleware} | T], Acc) ->
-  add_base_middleware(T, Acc ++ [{Method, Path, Fn, Middleware ++ base_middleware()}]).
+  maps:merge(Default, State).
 
 middleware(Middleware) ->
   Default = #{name  => default,

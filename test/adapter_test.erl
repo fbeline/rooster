@@ -21,17 +21,6 @@ middleware_test() ->
   ?assert(is_function(maps:get(enter, Result))),
   ?assert(is_function(maps:get(leave, Result))).
 
-flatt_routes_test() ->
-  Result = rooster_adapter:flatt_routes(#{routes => [[1], [2]]}),
-  ?assertEqual(#{routes => [1, 2]}, Result).
-
-add_base_middleware_test() ->
-  Expected = #{routes     => [{'GET', "foo", foo, rooster_adapter:base_middleware()}],
-               middleware => []},
-  Input = #{routes     => [{'GET', "foo", foo}],
-            middleware => []},
-  ?assertEqual(Expected, rooster_adapter:add_base_middleware(Input)).
-
 server_response_test() ->
   Result = rooster_adapter:server_response({200, #{}, [{"authorization","foo"}]}),
   ?assertEqual({200,
