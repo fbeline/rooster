@@ -2,26 +2,28 @@
 
 -behaviour(gen_server).
 
--export([start_link/0]).
-
+-export([start_link/1]).
 -export([init/1, handle_call/3, handle_cast/2,
          handle_info/2, terminate/2, code_change/3]).
+
+-ifdef(TEST).
+-compile(export_all).
+-endif.
 
 %% ===============
 %%% API
 %% ===============
-start_link() ->
-  gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
+start_link(State) ->
+  gen_server:start_link({local, ?MODULE}, ?MODULE, State, []).
 
 %% ===============
 %%% gen_server callbacks
 %% ===============
 init(Env) ->
-  Routes = routes(Env),
-  {ok, Routes}.
+  {ok, routes(Env)}.
 
-handle_call(_Request, _From, State) ->
-  {reply, ok, State}.
+handle_call(get_state, _From, State) ->
+  {reply, State, State}.
 
 handle_cast(_Request, State) ->
   {noreply, State}.
@@ -39,4 +41,15 @@ code_change(_OldVsn, State, _Extra) ->
 %%% Internal functions
 %% ===============
 routes(Routes) ->
-  Routes.
+  adapt_nested(lists:flatten(Routes), []).
+
+adapt_nested([], Acc) -> Acc;
+adapt_nested([{Path, Middleware, Nested}|T], Acc)
+  when erlang:is_list(Middleware), erlang:is_list(Nested) ->
+  adapt_nested(T, Acc ++ nested(Path, Middleware, rooster_adapter:nested_route(Nested)));
+adapt_nested([Route|T], Acc) ->
+  adapt_nested(T, Acc ++ [Route]).
+
+nested(_, _, []) -> [];
+nested(Path, Middleware, [{Method, NPath, Fn, NMiddleware}|T]) ->
+  [{Method, Path ++ NPath, Fn, Middleware ++ NMiddleware}] ++ nested(Path, Middleware, T).
