@@ -1,7 +1,7 @@
 # Rooster [![Build Status](https://travis-ci.org/fbeline/rooster.svg?branch=master)](https://travis-ci.org/fbeline/rooster)
 Simplistic REST framework that runs on top of mochiweb.
 ## Features
-- **Routes** Composible routing system that supports `GET` `POST` `PUT` and `DELETE` http verbs.
+- **Routes** Composable routing system that supports `GET` `POST` `PUT` and `DELETE` http verbs.
 - **Middleware**: Functions that have access to the request and the response, intercepting routes before and/or after execution.
 - **Basic Authentication**: Authentication module that can be easily integrated with Middleware.
 - **HTTPS Support**
