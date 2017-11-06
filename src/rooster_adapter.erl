@@ -9,9 +9,6 @@
 base_headers() ->
   [{"Content-type", "application/json"}].
 
-base_middleware() ->
-  [].
-
 config(Conf) ->
   Default = #{ip          => {0, 0, 0, 0},
               port        => 8080,

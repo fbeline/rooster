@@ -39,9 +39,6 @@ route_response_with_header_test() ->
 base_headers_test() ->
   ?assertEqual([{"Content-type", "application/json"}], rooster_adapter:base_headers()).
 
-base_middleware_test() ->
-  ?assertEqual([], rooster_adapter:base_middleware()).
-
 nested_route_test() ->
   Fn = fun() -> 1 end,
   Nested = [{'GET', Fn, [test]},
