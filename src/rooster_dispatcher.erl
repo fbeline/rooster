@@ -1,13 +1,13 @@
 -module(rooster_dispatcher).
 
--export([match_route/2]).
+-export([match_route/1]).
 
 -ifdef(TEST).
 -compile(export_all).
 -endif.
 
-match_route(#{path := Path, method := Method} = Req, Routes) ->
-  match_route(Path, Method, Req, Routes).
+match_route(#{path := Path, method := Method} = Req) ->
+  match_route(Path, Method, Req, rooster_route:get()).
 
 match_route(_, _, _, []) -> {404, #{message => <<"Not found">>}};
 match_route(RequestedRoute, Method, Req, [{Method, Route, Fn, Middleware} | T]) ->

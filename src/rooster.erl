@@ -24,7 +24,7 @@ ensure_started(App) ->
 -spec start(config(), state()) -> 'ignore' | {'error', _} | {'ok', pid()}.
 start(SrvConf, State) ->
   ensure_started(crypto),
-  rooster_holder:start([SrvConf, State]),
+  rooster_state:start_link([SrvConf, State]),
   application:start(rooster).
 
 -spec stop() -> ok.

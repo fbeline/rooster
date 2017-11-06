@@ -1,9 +1,9 @@
-# Rooster [![Build Status](https://travis-ci.org/fbeline/rooster.svg?branch=master)](https://travis-ci.org/fbeline/rooster) 
+# Rooster [![Build Status](https://travis-ci.org/fbeline/rooster.svg?branch=master)](https://travis-ci.org/fbeline/rooster)
 Simplistic REST framework that runs on top of mochiweb.
 ## Features
-- **Routes** that supports `GET` `POST` `PUT` and `DELETE` methods.
+- **Routes** Composible routing system that supports `GET` `POST` `PUT` and `DELETE` http verbs.
 - **Middleware**: Functions that have access to the request and the response, intercepting routes before and/or after execution.
-- **Basic Authentication**: Rooster provide a basic authentication module that can be easily integrated with Middleware.
+- **Basic Authentication**: Authentication module that can be easily integrated with Middleware.
 - **HTTPS Support**
 
 ## Installation
@@ -17,34 +17,61 @@ Simplistic REST framework that runs on top of mochiweb.
 
 4) Run the command: rebar3 compile
 
-## Route example
-Simple route example.
+## Routes
+Given the following functions, you will find how to define routes using *generic* or *nested* definition.
 
 ```Erlang
 -export([exports/0]).
 
+% custom header
 get_products(_Req) ->
-  {200, #{id => 43, price => 150}, [{"custom-header", "foo"}]}.
+  {200, [#{..}, #{..}], [{"custom-header", "foo"}]}.
 
+% request path param
 get_product(#{params := params}) ->
   Id = maps:get(id, params),
   {200, #{id => Id, price => 8000}}.
 
+% request payload
 save_product(#{body := Body}) ->
   {201, Body}.
-
-exports() ->
-  [{'GET', "products", fun get_products/1},
-   {'GET', "products/:id", fun get_product/1},
-   {'POST', "products", fun save_product/1, [auth]}].
 ```
-
-The **exports** method will provide the list of available endpoints that this module contains. Each tuple should have the HTTP method, the route itself, the route function and the middleware (name) that will be executed for this route. 
-
 Is important to note that the function **must** have one parameter, that will contains the request information.
 
-```erlang
+### Generic definition
+The simplest way of defining routes.
 
+```Erlang
+exports() ->
+  [{'GET', "/products", fun get_products/1, [auth]},
+   {'POST', "/products", fun save_product/1, [auth, admin]}
+   {'GET', "/products/:id", fun get_product/1, [auth]}].
+```
+
+The **exports** method will provide the list of available endpoints that this module contains. Each tuple should have `{HTTP verb, route path, route handler, list of middleware}`, the list of middleware is not a required parameter as a specific route may use none.
+
+### Nested definition
+For routes that gonna share a specific root path and or middleware, declaring routes in a nested way should be the properly solution.
+
+```Erlang
+exports() ->
+  [{"/products", [auth],
+    [{'GET', fun get_products/1},
+     {'POST', fun save_product/1, [admin]}
+     {'GET', "/:id", fun get_product/1}]}].
+```
+The nested definition should fit on the specification:
+
+```
+{root path, list of middleware,
+   [{HTTP verb, *nested path*, route handler, *list of middleware*}]}
+```
+Ps: The parameters surround by * are not required.
+
+### Request
+The request that will be passed to the route handlers is a map as the one bellow:
+
+```erlang
 #{path          => ...,
   method        => ...,
   headers       => ...,
@@ -55,7 +82,7 @@ Is important to note that the function **must** have one parameter, that will co
   authorization => ...}
 ```
 
-## Middleware example
+## Middleware
 
 - Middleware get the response returned by route (or other `leave` middleware) and multiply it by 2.
 
@@ -80,7 +107,7 @@ basic_auth(#{authorization := Auth} = Req) ->
     _ ->
       {break, {403, #{reason => <<"Acess Forbidden">>}}}
   end.
-  
+
 auth() ->
   #{name => auth,
     enter => fun basic_auth/1}.

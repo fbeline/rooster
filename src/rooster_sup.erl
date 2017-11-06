@@ -17,9 +17,9 @@ start_link([SrvConf, State]) ->
 init([Conf, State]) ->
   WebSpecs = web_specs(rooster_web, Conf),
   MiddlewareSpecs = middleware_specs(State),
-  StateSpecs = state_specs(State),
+  RouteSpecs = route_specs(State),
   rooster_deps:ensure(),
-  {ok, {{one_for_one, 10, 10}, [MiddlewareSpecs, StateSpecs, WebSpecs]}}.
+  {ok, {{one_for_one, 10, 10}, [RouteSpecs, MiddlewareSpecs, WebSpecs]}}.
 
 upgrade() ->
   {ok, {_, Specs}} = init([]),
@@ -47,14 +47,6 @@ web_specs(Mod, #{ip := Ip, port := Port, static_path := Sp, ssl := Ssl, ssl_opts
     Ssl, Ssl_opts],
   {Mod, {Mod, start, [WebConfig]}, permanent, 5000, worker, dynamic}.
 
-state_specs(State) ->
-  #{id       => rooster_state,
-    start    => {rooster_state, start_link, [State]},
-    restart  => permanent,
-    shutdown => brutal_kill,
-    type     => worker,
-    modules  => []}.
-
 middleware_specs(#{middleware := Middleware}) ->
   #{id       => rooster_middleware,
     start    => {rooster_middleware, start_link, [Middleware]},
@@ -62,3 +54,12 @@ middleware_specs(#{middleware := Middleware}) ->
     shutdown => brutal_kill,
     type     => worker,
     modules  => []}.
+
+route_specs(#{routes := Routes}) ->
+  #{id       => rooster_route,
+    start    => {rooster_route, start_link, [Routes]},
+    restart  => permanent,
+    shutdown => brutal_kill,
+    type     => worker,
+    modules  => []}.
+
