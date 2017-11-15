@@ -67,7 +67,7 @@ get_product(#{params := params}) ->
 save_product(#{body := Body}) ->
   {201, Body}.
 ```
-Is important to note that the function **must** have one parameter, that will contains the request information.
+Is important to note that the function **must** have one parameter, that will contain the request information.
 
 ### Generic definition
 The simplest way of defining routes.
@@ -79,10 +79,10 @@ exports() ->
    {'GET', "/products/:id", fun get_product/1, [auth]}].
 ```
 
-The **exports** method will provide the list of available endpoints that this module contains. Each tuple should have `{HTTP verb, route path, route handler, list of middleware}`, the list of middleware is not a required paarameter as a specific route may use none.
+The **exports** method will provide the list of available endpoints that this module contains. Each tuple should have `{HTTP verb, route path, route handler, list of middleware}`, the list of middleware is not a required parameter as a specific route may use none.
 
 ### Nested definition
-For routes that gonna share a specific root path and or middleware, declaring routes in a nested way should be the properly solution.
+For routes that gonna share a specific root path and or middleware, declaring routes in a nested way should be the proper solution.
 
 ```Erlang
 exports() ->
@@ -116,7 +116,7 @@ The request that will be passed to the route handlers is a map as the one bellow
 ## Middleware
 
 The middleware map can have both `leave` and `enter` keys. The `enter` function will have access to the request information and will be able to change it, the `leave` function will have access to the response and will be able to change it as well.
-At any moment that a middleware returns `{break, {status, response}}` the chain of execution will be break and the `response` will be evaluated as the request result.
+At any moment that a middleware returns `{break, {status, response}}` the chain of execution will terminate and the `response` will be evaluated as the request result.
 
 ![middleware](https://user-images.githubusercontent.com/5730881/32140052-75ae38aa-bc3a-11e7-9f54-855b96390bd9.png)
 
