@@ -9,13 +9,14 @@
 match_route(#{path := Path, method := Method} = Req) ->
   match_route(Path, Method, Req, rooster_route:get()).
 
-match_route(_, _, _, []) -> {404, #{message => <<"Not found">>}};
-match_route(RequestedRoute, Method, Req, [{Method, Route, Fn, Middleware} | T]) ->
+match_route(_, _, _, []) -> {404, #{message => <<"Not found">>}, []};
+match_route(RequestedRoute, Method, Req, [{Method, Route, Fn, Middleware}|T]) ->
   {ContextTokens, RequestTokens} = {parse_route(Route), parse_route(RequestedRoute)},
   case path_params(ContextTokens, RequestTokens) of
     {ok, Params} ->  handle_request(Req#{params := Params}, Fn, Middleware);
     {not_match, _} -> match_route(RequestedRoute, Method, Req, T)
-  end.
+  end;
+match_route(RequestedRoute, Method, Req, [_|T]) -> match_route(RequestedRoute, Method, Req, T).
 
 handle_request(Request, Fn, Middleware) ->
   Res = rooster_middleware:enter(Request, Middleware),

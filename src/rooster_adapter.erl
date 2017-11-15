@@ -1,6 +1,6 @@
 -module(rooster_adapter).
 
--export([config/1, state/1, middleware/1, route_response/1, server_response/1, request/1, nested_route/1]).
+-export([config/1, state/1, middleware/1, route_response/1, server_response/1, request/1, nested_route/1, with_middleware/1]).
 
 -ifdef(TEST).
 -compile(export_all).
@@ -56,3 +56,7 @@ nested_route([{Method, Fn, Middleware}|T]) ->
   [{Method, "", Fn, Middleware}] ++ nested_route(T);
 nested_route([{Method, Fn}|T]) ->
   [{Method, "", Fn, []}] ++ nested_route(T).
+
+with_middleware({Method, Path, Fn}) ->
+  {Method, Path, Fn, []};
+with_middleware(Route) -> Route.

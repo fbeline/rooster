@@ -51,7 +51,7 @@ adapt_nested([{Path, Middleware, Nested}|T], Acc)
   when erlang:is_list(Middleware), erlang:is_list(Nested) ->
   adapt_nested(T, Acc ++ nested(Path, Middleware, rooster_adapter:nested_route(Nested)));
 adapt_nested([Route|T], Acc) ->
-  adapt_nested(T, Acc ++ [Route]).
+  adapt_nested(T, Acc ++ [rooster_adapter:with_middleware(Route)]).
 
 nested(_, _, []) -> [];
 nested(Path, Middleware, [{Method, NPath, Fn, NMiddleware}|T]) ->
