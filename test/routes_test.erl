@@ -22,11 +22,23 @@ expected_routes(Fn) ->
    {'GET', "/account/:id/permissions", Fn, [auth]}].
 
 expected_mixed_routes(Fn) ->
-  expected_routes(Fn) ++ [{'GET', "/health", Fn, []}].
+  [{'GET', "/health", Fn, []}] ++ expected_routes(Fn).
 
 expected_complete_routes(Fn) ->
   [{'GET', "/account/:id/foo", Fn, [auth, test]},
    {'POST', "/account/:id/bar", Fn, [auth, test]}].
+
+generic_routes() ->
+  [{'GET', "/account/:id", fn, []},
+   {'GET', "/account/foo", fn, []},
+   {'POST', "/account/save", fn, []},
+   {'POST', "/account/:id/status", fn, []}].
+
+expected_sorted_routes() ->
+  [{'GET', "/account/foo", fn, []},
+   {'POST', "/account/save", fn, []},
+   {'GET', "/account/:id", fn, []},
+   {'POST', "/account/:id/status", fn, []}].
 
 start_test() ->
   Fn = fun() -> foo end,
@@ -54,3 +66,7 @@ nested_test() ->
   {Path, Middleware, Nested} = complete_routes(Fn),
   Routes = rooster_route:nested(Path, Middleware, Nested),
   ?assertEqual(expected_complete_routes(Fn), Routes).
+
+sort_test() ->
+  Sorted = rooster_route:sort(generic_routes()),
+  ?assertEqual(expected_sorted_routes(), Sorted).
