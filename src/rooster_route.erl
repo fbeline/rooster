@@ -44,7 +44,7 @@ code_change(_OldVsn, State, _Extra) ->
 %%% Internal functions
 %% ===============
 routes(Routes) ->
-  adapt_nested(lists:flatten(Routes), []).
+  sort(adapt_nested(lists:flatten(Routes), [])).
 
 adapt_nested([], Acc) -> Acc;
 adapt_nested([{Path, Middleware, Nested}|T], Acc)
@@ -56,3 +56,12 @@ adapt_nested([Route|T], Acc) ->
 nested(_, _, []) -> [];
 nested(Path, Middleware, [{Method, NPath, Fn, NMiddleware}|T]) ->
   [{Method, Path ++ NPath, Fn, Middleware ++ NMiddleware}] ++ nested(Path, Middleware, T).
+
+sort(Routes) -> sort(Routes, [], []).
+
+sort([], LF, LR) -> LF ++ LR;
+sort([{Method, Path, Fn, Middleware}|T], LF, LR) ->
+  case string:str(Path, ":") of
+    0 -> sort(T, LF ++ [{Method, Path, Fn, Middleware}], LR);
+    _ -> sort(T, LF, LR ++ [{Method, Path, Fn, Middleware}])
+  end.
