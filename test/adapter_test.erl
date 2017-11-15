@@ -51,3 +51,13 @@ nested_route_test() ->
               {'GET', "/health", Fn, [test]}],
   Result = rooster_adapter:nested_route(Nested),
   ?assertEqual(Expected, Result).
+
+with_middleware_test() ->
+  Route = {'GET', "/foo", foo},
+  Result = rooster_adapter:with_middleware(Route),
+  ?assertEqual({'GET', "/foo", foo, []}, Result).
+
+with_middleware_valid_test() ->
+  Route = {'GET', "/foo", foo, []},
+  Result = rooster_adapter:with_middleware(Route),
+  ?assertEqual(Route, Result).

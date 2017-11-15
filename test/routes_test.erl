@@ -22,7 +22,7 @@ expected_routes(Fn) ->
    {'GET', "/account/:id/permissions", Fn, [auth]}].
 
 expected_mixed_routes(Fn) ->
-  expected_routes(Fn) ++ [{'GET', "/health", Fn}].
+  expected_routes(Fn) ++ [{'GET', "/health", Fn, []}].
 
 expected_complete_routes(Fn) ->
   [{'GET', "/account/:id/foo", Fn, [auth, test]},
