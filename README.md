@@ -29,7 +29,7 @@ start() ->
                 #{routes => [hello()]}).
 
 hello() ->
-  {'GET', "/hello", fun(_) -> #{message => <<"hello world">>} end}.
+  {'GET', "/hello", fun(_) -> {200, #{message => <<"hello world">>}} end}.
 ```
 
 Start it using the command:
