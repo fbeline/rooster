@@ -150,7 +150,7 @@ basic_auth(#{authorization := Auth} = Req) ->
     true ->
       Req;
     _ ->
-      {break, {403, #{reason => <<"Acess Forbidden">>}}}
+      {break, {403, #{reason => <<"Access Forbidden">>}}}
   end.
 
 auth() ->
